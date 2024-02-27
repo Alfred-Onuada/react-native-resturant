@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
 import CartItem from '../components/cart-item';
+import { Stack } from 'expo-router';
 
 export default function Cart() {
   const [itemsInCart, setItemsInCart] = useState([
@@ -78,6 +79,18 @@ export default function Cart() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          title: 'Your Cart',
+          headerStyle: { backgroundColor: '#cbc0aa' },
+          headerTitleStyle: {
+            fontWeight: '400',
+            fontSize: 18
+          },
+          headerBackTitleVisible: false
+        }}
+      />
+
       <FlatList 
         data={itemsInCart}
         renderItem={({item}) => <CartItem data={item} 
@@ -106,6 +119,7 @@ export default function Cart() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 15
   },
   costRow: {
     display: 'flex',

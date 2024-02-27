@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import MenuItem from '../components/menu-item';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 
 export default function Menu() {
   const [foods, setFoods]= useState([
@@ -84,6 +84,17 @@ export default function Menu() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          title: 'Menu Items',
+          headerStyle: { backgroundColor: '#cbc0aa' },
+          headerTitleStyle: {
+            fontWeight: '400',
+            fontSize: 18
+          },
+        }}
+      />
+
       <FlatList
         data={foods}
         renderItem={({item}) => <MenuItem data={item} />} />

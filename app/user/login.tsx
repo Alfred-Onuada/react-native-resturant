@@ -1,4 +1,4 @@
-import { Link, router } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 
@@ -12,6 +12,12 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      
       <Text style={styles.title}>Let's get you back into your account</Text>
       <TextInput
         style={styles.input}

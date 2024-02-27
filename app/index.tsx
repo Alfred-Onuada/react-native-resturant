@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image } from 'react-native';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 
 export default function App() {
   const [registerClicked, setRegisterClicked] = useState(false);
@@ -29,7 +29,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.homeContainer}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <View style={styles.homeContainer}>
         <View style={styles.welcomeContainer}>
           <Image source={require('./../assets/logo.jpeg')} style={styles.image}></Image>
           <Text style={styles.welcomeTo}>Welcome to</Text>
@@ -45,7 +51,7 @@ export default function App() {
             <Text style={[styles.btnText, loginClicked && styles.clickedBtnText]}>Login</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
       <StatusBar style="dark" />
     </View>
   );
