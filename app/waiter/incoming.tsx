@@ -1,9 +1,25 @@
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Pressable, FlatList } from 'react-native';
+import OrderItem from '../components/incoming-order';
+import ReservationItem from '../components/incoming-reservation';
 
 export default function Incoming() {
   const [activeTab, setActiveTab] = useState("orders");
+  const [orders, setOrders] = useState([
+    { id: 1, customerName: 'James Onoja', amountPaid: 500, orderDetails: [{ itemName: 'French Fries', quantity: 18 }, { itemName: 'Pizza', quantity: 5 }] },
+    { id: 2, customerName: 'John Doe', amountPaid: 300, orderDetails: [{ itemName: 'Burger', quantity: 2 }, { itemName: 'Coke', quantity: 3 }] },
+    { id: 3, customerName: 'Jane Smith', amountPaid: 700, orderDetails: [{ itemName: 'Salad', quantity: 1 }, { itemName: 'Steak', quantity: 2 }] },
+    { id: 4, customerName: 'Alice Johnson', amountPaid: 450, orderDetails: [{ itemName: 'Pasta', quantity: 3 }, { itemName: 'Garlic Bread', quantity: 2 }] },
+    { id: 5, customerName: 'Bob Brown', amountPaid: 550, orderDetails: [{ itemName: 'Sushi', quantity: 8 }, { itemName: 'Tempura', quantity: 4 }] }
+  ]);
+  const [reservations, setReservations] = useState([
+    { id: 1, tableName: 'Table 1', customerInfo: '1:30pm, James Onoja', amountPaid: 500 },
+    { id: 2, tableName: 'Table 2', customerInfo: '2:00pm, John Doe', amountPaid: 300 },
+    { id: 3, tableName: 'Table 3', customerInfo: '2:30pm, Jane Smith', amountPaid: 700 },
+    { id: 4, tableName: 'Table 4', customerInfo: '3:00pm, Alice Johnson', amountPaid: 450 },
+    { id: 5, tableName: 'Table 5', customerInfo: '3:30pm, Bob Brown', amountPaid: 550 },
+  ]);
 
   return (
     <View style={styles.container}>
@@ -32,49 +48,19 @@ export default function Incoming() {
       {/* Orders */}
       {
         activeTab === 'orders' &&
-        <View>
-          <View style={styles.reservationContainer}>
-            <Text style={styles.customerName}>James Onoja</Text>
-            <Text style={{ ...styles.amountPaid, marginVertical: 5 }}>$500</Text>
-            <Text style={styles.orderDetailsTitle}>Order Details</Text>
-            <View style={styles.rowDown}>
-              <Text style={styles.orderName}>French Fries</Text>
-              <Text style={styles.quantity}>x18</Text>
-            </View>
-            <View style={styles.rowDown}>
-              <Text style={styles.orderName}>Pizza</Text>
-              <Text style={styles.quantity}>x5</Text>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.approveBtn}>
-                <Text style={styles.approveText}>Approve</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rejectBtn}>
-                <Text style={styles.approveText}>Reject</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <FlatList
+          data={orders}
+          renderItem={OrderItem}
+          keyExtractor={(item) => item.id.toString()}/>
       }
 
       {/* Seats */}
       {
         activeTab === 'reservation' &&
-        <View>
-          <View style={styles.reservationContainer}>
-            <Text style={styles.tableName}>Table 1</Text>
-            <Text style={styles.customerInfo}>1:30pm, James Onoja</Text>
-            <Text style={styles.amountPaid}>$500</Text>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.approveBtn}>
-                <Text style={styles.approveText}>Approve</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.rejectBtn}>
-                <Text style={styles.approveText}>Reject</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <FlatList
+          data={reservations}
+          renderItem={ReservationItem}
+          keyExtractor={(item) => item.id.toString()}/>
       }
     </View>
   );
@@ -115,6 +101,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   approveText: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: 'white'
+  },
+  rejectText: {
     fontSize: 18,
     fontWeight: '400',
     color: 'white'
