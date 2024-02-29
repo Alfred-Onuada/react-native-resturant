@@ -2,16 +2,11 @@ import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 
-export default function Register() {
-  const [fullname, setFullname] = useState('');
+export default function Login() {
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
-  function register() {
-    // Perform registration logic here
-    // For demonstration purposes, simply logging the registration data
-    console.log("Registration Data:", { fullname, email, phone, password });
+  function login() {
     router.replace('/user/menu')
   }
 
@@ -22,15 +17,8 @@ export default function Register() {
           headerShown: false,
         }}
       />
-
-      <Text style={styles.title}>Create an Account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        placeholderTextColor="#A9A9A9"
-        value={fullname}
-        onChangeText={setFullname}
-      />
+      
+      <Text style={styles.title}>Let's get you back into your account</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -38,32 +26,22 @@ export default function Register() {
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
-        value={email}
         onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Phone"
-        placeholderTextColor="#A9A9A9"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
         placeholderTextColor="#A9A9A9"
         secureTextEntry
-        value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={register}>
-        <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity style={styles.button} onPress={() => login()}>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <View style={styles.loginInstead}>
-        <Text style={styles.alreadyHave}>Already have one?</Text>
-        <Link href="/user/login">
-          <Text style={styles.loginText}>Login</Text>
+        <Text style={styles.alreadyHave}>Don't have one?</Text>
+        <Link href="/register">
+          <Text style={styles.loginText}>Register</Text>
         </Link>
       </View>
     </View>
@@ -102,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 18,
-    color: '#FFFFFF',
+    fontSize: 20,
+    color: '#ffffff',
   },
   loginInstead: {
     marginTop: 20,

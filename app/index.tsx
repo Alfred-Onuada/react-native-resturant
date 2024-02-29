@@ -14,7 +14,7 @@ export default function App() {
       setRegisterClicked(false)
     }, 200);
 
-    router.replace('/user/register');
+    router.replace('/register');
   }
 
   function handleLoginClick() {
@@ -24,7 +24,7 @@ export default function App() {
       setLoginClicked(false)
     }, 200);
     
-    router.replace('/user/login');
+    router.replace('/login');
   }
 
   return (
