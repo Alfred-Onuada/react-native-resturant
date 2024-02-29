@@ -7,7 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   function login() {
-    router.replace('/user/menu')
+    router.replace('/waiter/incoming')
   }
 
   return (
