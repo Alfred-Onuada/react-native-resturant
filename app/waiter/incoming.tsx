@@ -31,7 +31,6 @@ export default function Incoming() {
             fontWeight: '400',
             fontSize: 18
           },
-          headerBackTitleVisible: false
         }}
       />
 

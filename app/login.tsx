@@ -7,7 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   function login() {
-    router.replace('/waiter/incoming')
+    router.replace('/admin/purchase-history')
   }
 
   return (
