@@ -18,7 +18,7 @@ export default function Register() {
       const data = { fullname, email, phone, password };
       await registerAPI(data);
 
-      // router.replace('/user/menu');
+      router.replace('/user/menu');
     } catch (error: any) {
       showToast({msg: error.message, danger: true});
     } finally {

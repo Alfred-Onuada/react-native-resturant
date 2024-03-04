@@ -1,50 +1,74 @@
 import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import showToast from './utils/showToast';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import { loginAPI } from './controllers/auth';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function login() {
-    router.replace('/admin/purchase-history')
+  async function login() {
+    try {
+      setLoading(true);
+      const userType = await loginAPI(email, password);
+
+      if (userType === 'user') {
+        router.replace('/user/menu');
+      } else if (userType === 'waiter') {
+        router.replace('/waiter/incoming')
+      } else if (userType === 'admin') {
+        router.replace('/admin/menu-management')
+      } else {
+        showToast({msg: "Something isn't quite right, please try again", danger: true});
+      }
+    } catch (error: any) {
+      showToast({msg: error.message, danger: true});
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
-      
-      <Text style={styles.title}>Let's get you back into your account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#A9A9A9"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#A9A9A9"
-        secureTextEntry
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity style={styles.button} onPress={() => login()}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <View style={styles.loginInstead}>
-        <Text style={styles.alreadyHave}>Don't have one?</Text>
-        <Link href="/register">
-          <Text style={styles.loginText}>Register</Text>
-        </Link>
+    <RootSiblingParent>
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
+        
+        <Text style={styles.title}>Let's get you back into your account</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#A9A9A9"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#A9A9A9"
+          secureTextEntry
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity style={styles.button} onPress={() => login()}>
+          <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Login'}</Text>
+        </TouchableOpacity>
+        <View style={styles.loginInstead}>
+          <Text style={styles.alreadyHave}>Don't have one?</Text>
+          <Link href="/register">
+            <Text style={styles.loginText}>Register</Text>
+          </Link>
+        </View>
       </View>
-    </View>
+    </RootSiblingParent>
   );
 }
 

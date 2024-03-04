@@ -14,25 +14,72 @@ const client = new MongoClient(url);
     const db = client.db('resturant-app');
 
     app.post('/register', async (req, res) => {
-      if (!req.body) {
-        res.status(400).json({message: 'please provide the required info'})
-        return;
+      try {
+        if (!req.body) {
+          res.status(400).json({message: 'please provide the required info'})
+          return;
+        }
+  
+        const emailExists = await db.collection('users').findOne({email: req.body.email});
+  
+        if (emailExists) {
+          res.status(400).json({message: 'Email already exists'});
+          return;
+        }
+  
+        const insertInfo = await db.collection('users').insertOne(req.body);
+  
+        res.status(200).json({
+          _id: insertInfo.insertedId,
+          type: 'user',
+          ...req.body
+        })
+      } catch (error) {
+        res.status(500).json({message: error.message});
       }
+    })
 
-      const emailExists = await db.collection('users').findOne({email: req.body.email});
+    app.post('/login', async (req, res) => {
+      try {
+        const {email, password} = req.body;
+        const dataIsSet = email.trim().length && password.trim().length;
 
-      if (emailExists) {
-        res.status(400).json({message: 'Email already exists'});
-        return;
+        if (!dataIsSet) {
+          res.status(400).json({message: 'Please provide all required fields'});
+          return;
+        }
+
+        let user = await db.collection('admins').findOne({email, password});
+
+        if (user) {
+          user.type = 'admin';
+        }
+
+        if (!user) {
+          user = await db.collection('waiters').findOne({email, password});
+
+          if (user) {
+            user.type = 'waiter';
+          }
+
+          if (!user) {
+            user = await db.collection('users').findOne({email, password});
+
+            if (user) {
+              user.type = 'user';
+            }
+
+            if (!user) {
+              res.status(401).json({message: 'Invalid credentials'});
+              return;
+            }
+          }
+        }
+
+        res.status(200).json(user);
+      } catch (error) {
+        res.status(500).json({message: error.message});
       }
-
-      const insertInfo = await db.collection('users').insertOne(req.body);
-
-      res.status(200).json({
-        _id: insertInfo.insertedId,
-        type: 'user',
-        ...req.body
-      })
     })
 
     app.listen(6777, () => {

@@ -31,3 +31,33 @@ export async function registerAPI(data: IRegister) {
 
   return;
 }
+
+export async function loginAPI(email: string, password: string) {
+  const dataIsSet = email.trim().length && password.trim().length;
+
+  if (!dataIsSet) {
+    throw Error("Please enter all required values")
+  }
+
+  const resp = await fetch('http://localhost:6777/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({email, password})
+  })
+
+  if (resp.status.toString().startsWith('2') === false) {
+    const respData = await resp.json();
+    throw respData;
+  }
+ 
+  const respData = await resp.json();
+
+  await storage.save({
+    key: 'userInfo',
+    data: respData,
+  });
+
+  return respData.type;
+}
