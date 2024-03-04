@@ -5,43 +5,7 @@ import { Link, router, Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function Menu() {
-  const [foods, setFoods]= useState([
-    {
-      id: 1,
-      name: "Pizza",
-      price: 10.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-    {
-      id: 2,
-      name: "Burger",
-      price: 8.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-    {
-      id: 3,
-      name: "Sushi",
-      price: 15.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-    {
-      id: 4,
-      name: "Pasta",
-      price: 12.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-    {
-      id: 5,
-      name: "Salad",
-      price: 7.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-  ]);
+  const [foods, setFoods]= useState();
   const [noItemsInCart, setNoItemsInCart] = useState(0);
 
   function openCart() {

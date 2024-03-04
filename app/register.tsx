@@ -1,7 +1,7 @@
 import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { registerAPI } from './controllers/auth';
+import { registerAPI } from './services/auth';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import showToast from './utils/showToast';
 

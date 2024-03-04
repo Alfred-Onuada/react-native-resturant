@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import showToast from './utils/showToast';
 import { RootSiblingParent } from 'react-native-root-siblings';
-import { loginAPI } from './controllers/auth';
+import { loginAPI } from './services/auth';
 
 
 export default function Login() {
