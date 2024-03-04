@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { router, Stack } from 'expo-router';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 export default function App() {
   const [registerClicked, setRegisterClicked] = useState(false);
@@ -28,32 +29,34 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
+    <RootSiblingParent>
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      <View style={styles.homeContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image source={require('./../assets/logo.jpeg')} style={styles.image}></Image>
-          <Text style={styles.welcomeTo}>Welcome to</Text>
-          <Text style={styles.name}>Gourmet Palmer</Text>
-          <Text style={styles.gladTo}>We are glad to serve you</Text>
-        </View>
+        <View style={styles.homeContainer}>
+          <View style={styles.welcomeContainer}>
+            <Image source={require('./../assets/logo.jpeg')} style={styles.image}></Image>
+            <Text style={styles.welcomeTo}>Welcome to</Text>
+            <Text style={styles.name}>Gourmet Palmer</Text>
+            <Text style={styles.gladTo}>We are glad to serve you</Text>
+          </View>
 
-        <View style={styles.btnContainer}>
-          <TouchableOpacity style={[styles.btn, registerClicked && styles.clickedBtn]} onPress={() => handleRegisterClick()}>
-            <Text style={[styles.btnText, registerClicked && styles.clickedBtnText]}>Register</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.btn, loginClicked && styles.clickedBtn]} onPress={() => handleLoginClick()}>
-            <Text style={[styles.btnText, loginClicked && styles.clickedBtnText]}>Login</Text>
-          </TouchableOpacity>
+          <View style={styles.btnContainer}>
+            <TouchableOpacity style={[styles.btn, registerClicked && styles.clickedBtn]} onPress={() => handleRegisterClick()}>
+              <Text style={[styles.btnText, registerClicked && styles.clickedBtnText]}>Register</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.btn, loginClicked && styles.clickedBtn]} onPress={() => handleLoginClick()}>
+              <Text style={[styles.btnText, loginClicked && styles.clickedBtnText]}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+        <StatusBar style="dark" />
       </View>
-      <StatusBar style="dark" />
-    </View>
+    </RootSiblingParent>
   );
 }
 

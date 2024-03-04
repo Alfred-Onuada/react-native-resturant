@@ -1,72 +1,85 @@
 import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { registerAPI } from './controllers/auth';
+import { RootSiblingParent } from 'react-native-root-siblings';
+import showToast from './utils/showToast';
 
 export default function Register() {
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  function register() {
-    // Perform registration logic here
-    // For demonstration purposes, simply logging the registration data
-    console.log("Registration Data:", { fullname, email, phone, password });
-    router.replace('/user/menu')
+  async function register() {
+    try {
+      setLoading(true);
+      const data = { fullname, email, phone, password };
+      await registerAPI(data);
+
+      // router.replace('/user/menu');
+    } catch (error: any) {
+      showToast({msg: error.message, danger: true});
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
+    <RootSiblingParent>
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      <Text style={styles.title}>Create an Account</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        placeholderTextColor="#A9A9A9"
-        value={fullname}
-        onChangeText={setFullname}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#A9A9A9"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Phone"
-        placeholderTextColor="#A9A9A9"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#A9A9A9"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity style={styles.button} onPress={register}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-      <View style={styles.loginInstead}>
-        <Text style={styles.alreadyHave}>Already have one?</Text>
-        <Link href="/login">
-          <Text style={styles.loginText}>Login</Text>
-        </Link>
+        <Text style={styles.title}>Create an Account</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Full Name"
+          placeholderTextColor="#A9A9A9"
+          value={fullname}
+          onChangeText={setFullname}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#A9A9A9"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone"
+          placeholderTextColor="#A9A9A9"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#A9A9A9"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity style={styles.button} onPress={register} disabled={loading}>
+          <Text style={styles.buttonText}>{ loading === false ? 'Register' : 'Registering...'}</Text>
+        </TouchableOpacity>
+        <View style={styles.loginInstead}>
+          <Text style={styles.alreadyHave}>Already have one?</Text>
+          <Link href="/login">
+            <Text style={styles.loginText}>Login</Text>
+          </Link>
+        </View>
       </View>
-    </View>
+    </RootSiblingParent>
   );
 }
 
