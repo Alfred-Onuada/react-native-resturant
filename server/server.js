@@ -82,6 +82,17 @@ const client = new MongoClient(url);
       }
     })
 
+    app.get('/foods', async (req, res) => {
+      try {
+        const cursor = db.collection('foods').find();
+        const foodItems = await cursor.toArray();
+
+        res.status(200).json(foodItems);
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    })
+
     app.listen(6777, () => {
       console.log('Server is live');
     })

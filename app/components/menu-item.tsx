@@ -5,7 +5,7 @@ export default function MenuItem({data}: {data: IFood}) {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.row}>
-        <Image source={require('./../../assets/pizza.jpeg')} style={styles.image}></Image>
+        <Image source={{uri: data.image, cache: 'force-cache'}} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
           <Text style={styles.price}>${data.price}</Text>

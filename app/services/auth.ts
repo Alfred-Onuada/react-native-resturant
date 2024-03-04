@@ -61,3 +61,11 @@ export async function loginAPI(email: string, password: string) {
 
   return respData.type;
 }
+
+export async function getUserType() {
+  const userInfo = await storage.load({
+    key: 'userInfo'
+  })
+
+  return userInfo.type;
+}

@@ -5,7 +5,7 @@ export default function showToast({ msg, danger }: { msg: string, danger?: boole
   Toast.show(msg, {
     animation: true,
     duration: Toast.durations.LONG,
-    backgroundColor: danger ? "#f72f2f" : "rgb(29, 155, 240)",
+    backgroundColor: danger ? "#f72f2f" : "#cbc0aa",
     textColor: "#fff",
     containerStyle: {
       marginBottom: 60

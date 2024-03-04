@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import { getUserType } from './services/auth';
 
 export default function App() {
   const [registerClicked, setRegisterClicked] = useState(false);
@@ -27,6 +28,24 @@ export default function App() {
     
     router.replace('/login');
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const userType = await getUserType();
+
+        if (userType === 'user') {
+          router.replace('/user/menu');
+        } else if (userType === 'waiter') {
+          router.replace('/waiter/incoming')
+        } else if (userType === 'admin') {
+          router.replace('/admin/menu-management')
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [])
 
   return (
     <RootSiblingParent>
