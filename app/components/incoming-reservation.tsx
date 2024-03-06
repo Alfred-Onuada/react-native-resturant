@@ -13,7 +13,7 @@ export default function ReservationItem({ item }: { item: IReservation }) {
     <View style={styles.reservationContainer}>
       <Text style={styles.tableName}>{item.tableName}</Text>
       <Text style={styles.customerInfo}>{item.customerInfo}</Text>
-      <Text style={styles.amountPaid}>${item.amountPaid}</Text>
+      <Text style={styles.amountPaid}>₦{item.amountPaid}</Text>
       <View style={styles.row}>
         <TouchableOpacity onPress={() => handleApprove(item.id)} style={styles.approveBtn}>
           <Text style={styles.approveText}>Approve</Text>

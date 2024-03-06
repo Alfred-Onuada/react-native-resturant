@@ -10,7 +10,7 @@ export default function AdminMenuItem({data}: {data: IFood}) {
         <Image source={require('./../../assets/pizza.jpeg')} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
-          <Text style={styles.price}>${data.price}</Text>
+          <Text style={styles.price}>₦{data.price}</Text>
         </View>
       </View>
 

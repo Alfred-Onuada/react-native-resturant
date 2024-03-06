@@ -8,7 +8,7 @@ export default function MenuItem({data, updateItemsInCart}: {data: IFood, update
         <Image source={{uri: 'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg', cache: 'force-cache'}} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
-          <Text style={styles.price}>${data.price}</Text>
+          <Text style={styles.price}>₦{data.price}</Text>
         </View>
       </View>
 

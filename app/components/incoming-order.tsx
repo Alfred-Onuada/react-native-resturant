@@ -12,7 +12,7 @@ export default function OrderItem({ item }: {item: IOrder}) {
   return (
     <View style={{ padding: 20, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
       <Text style={styles.customerName}>{item.customerName}</Text>
-      <Text style={{ ...styles.amountPaid, marginVertical: 5 }}>${item.amountPaid}</Text>
+      <Text style={{ ...styles.amountPaid, marginVertical: 5 }}>₦{item.amountPaid}</Text>
       <Text style={styles.orderDetailsTitle}>Order Details</Text>
       {item.orderDetails.map((detail, index) => (
         <View key={index} style={styles.rowDown}>

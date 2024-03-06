@@ -5,7 +5,7 @@ export default function History({data}: {data: IPurchase}) {
     <View style={styles.row}>
       <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text style={styles.name}>{data.customerName}</Text>
-        <Text style={styles.spent}>${data.amount}</Text>
+        <Text style={styles.spent}>₦{data.amount}</Text>
       </View>
       <Text style={styles.text}>Spent on: {data.type}</Text>
       <Text style={styles.text}>Approved By: {data.approvedBy}</Text>

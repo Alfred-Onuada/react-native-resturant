@@ -103,15 +103,15 @@ export default function Cart() {
           />}/>
       <View style={{...styles.costRow, marginTop: 25}}>
         <Text style={styles.costTitle}>Subtotal</Text>
-        <Text style={styles.cost}>${subTotal.toFixed(2)}</Text>
+        <Text style={styles.cost}>₦{subTotal.toFixed(2)}</Text>
       </View>
       <View style={styles.costRow}>
         <Text style={styles.costTitle}>Fees</Text>
-        <Text style={styles.cost}>${fees.toFixed(2)}</Text>
+        <Text style={styles.cost}>₦{fees.toFixed(2)}</Text>
       </View>
       <View style={styles.costRow}>
         <Text style={styles.costTitle}>Total</Text>
-        <Text style={styles.cost}>${total.toFixed(2)}</Text>
+        <Text style={styles.cost}>₦{total.toFixed(2)}</Text>
       </View>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Checkout</Text>

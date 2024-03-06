@@ -8,7 +8,7 @@ export default function CartItem({data, increaseQuantity, decreaseQuantity}: {da
         <Image source={{uri: 'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg', cache: 'force-cache'}} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
-          <Text style={styles.price}>${data.price}</Text>
+          <Text style={styles.price}>₦{data.price}</Text>
         </View>
       </View>
 

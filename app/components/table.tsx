@@ -7,7 +7,7 @@ export default function Table({data}: {data: ITable}) {
       <View>
         <Text style={styles.name}>{data.number}</Text>
         <Text style={styles.capacity}>{data.capacity} seat(s)</Text>
-        <Text style={styles.price}>${data.price}</Text>
+        <Text style={styles.price}>₦{data.price}</Text>
       </View>
       {
         data.status === 'available' ? 
