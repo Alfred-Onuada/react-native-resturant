@@ -1,18 +1,18 @@
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { IFood } from '../interfaces/food';
 
-export default function MenuItem({data}: {data: IFood}) {
+export default function MenuItem({data, updateItemsInCart}: {data: IFood, updateItemsInCart: (item: IFood) => void}) {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.row}>
-        <Image source={{uri: data.image, cache: 'force-cache'}} style={styles.image}></Image>
+        <Image source={{uri: 'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg', cache: 'force-cache'}} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
           <Text style={styles.price}>${data.price}</Text>
         </View>
       </View>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => updateItemsInCart(data)}>
         <Text style={styles.addToCart}>+</Text>
       </TouchableOpacity>
     </View>

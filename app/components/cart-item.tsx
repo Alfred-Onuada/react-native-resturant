@@ -1,11 +1,11 @@
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import { IFood } from '../interfaces/food';
 
-export default function CartItem({data, increaseQuantity, decreaseQuantity}: {data: IFood, increaseQuantity: (id: number) => void, decreaseQuantity: (id: number) => void }) {
+export default function CartItem({data, increaseQuantity, decreaseQuantity}: {data: IFood, increaseQuantity: (id: string) => void, decreaseQuantity: (id: string) => void }) {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.row}>
-        <Image source={require('./../../assets/pizza.jpeg')} style={styles.image}></Image>
+        <Image source={{uri: 'https://spoonacular.com/cdn/ingredients_100x100/apple.jpg', cache: 'force-cache'}} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
           <Text style={styles.price}>${data.price}</Text>
@@ -13,11 +13,11 @@ export default function CartItem({data, increaseQuantity, decreaseQuantity}: {da
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity onPress={() => decreaseQuantity(data.id)}>
+        <TouchableOpacity onPress={() => decreaseQuantity(data._id)}>
           <Text style={styles.actionBtn}>-</Text>
         </TouchableOpacity>
         <Text style={styles.quantityCount}>{data.quantity}</Text>
-        <TouchableOpacity onPress={() => increaseQuantity(data.id)}>
+        <TouchableOpacity onPress={() => increaseQuantity(data._id)}>
           <Text style={styles.actionBtn}>+</Text>
         </TouchableOpacity>
       </View>

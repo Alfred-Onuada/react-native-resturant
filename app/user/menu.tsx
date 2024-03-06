@@ -1,35 +1,50 @@
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import MenuItem from '../components/menu-item';
-import { Link, router, Stack } from 'expo-router';
+import { Link, router, Stack, useNavigation } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { getFoodItems } from '../services/users';
+import { addItemToCart, getCartItems, getFoodItems } from '../services/users';
 import showToast from '../utils/showToast';
 import { RootSiblingParent } from 'react-native-root-siblings';
+import { IFood } from '../interfaces/food';
 
 export default function Menu() {
   const [foods, setFoods]= useState([]);
   const [noItemsInCart, setNoItemsInCart] = useState(0);
+  const navigation = useNavigation();
 
   function openCart() {
     router.navigate('/user/cart');
   }
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const foodItems = await getFoodItems();
-  
-        if (foodItems.length === 0) {
-          showToast({msg: 'No Item in the menu right now'});
-        }
-  
-        setFoods(foodItems);
-      } catch (error: any) {
-        showToast({msg: error.message, danger: true})
+  async function updateItemsInCart(item: IFood) {
+    const itemsInCartCount = await addItemToCart(item);
+
+    setNoItemsInCart(itemsInCartCount);
+  }
+
+  async function loadMenu() {
+    try {
+      const foodItems = await getFoodItems();
+
+      if (foodItems.length === 0) {
+        showToast({ msg: 'No Item in the menu right now' });
       }
-    })()
+
+      setFoods(foodItems);
+
+      const cartItems = await getCartItems();
+      setNoItemsInCart(cartItems.length);
+    } catch (error: any) {
+      showToast({ msg: error.message, danger: true });
+    }
+  }
+
+  useEffect(() => {
+    loadMenu()
   }, []);
+
+  navigation.addListener("focus", loadMenu);
 
   return (
     <RootSiblingParent>
@@ -48,7 +63,7 @@ export default function Menu() {
 
         <FlatList
           data={foods}
-          renderItem={({item}) => <MenuItem data={item} />} />
+          renderItem={({item}) => <MenuItem data={item} updateItemsInCart={updateItemsInCart} />} />
 
         <View style={styles.bottom}> 
           <TouchableOpacity style={styles.button} onPress={() => openCart()}>

@@ -1,81 +1,85 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
 import CartItem from '../components/cart-item';
 import { Stack } from 'expo-router';
+import { getCartItems, updateCart } from '../services/users';
+import { IFood } from '../interfaces/food';
 
 export default function Cart() {
-  const [itemsInCart, setItemsInCart] = useState([
-    {
-      id: 1,
-      name: "Pizza",
-      price: 10.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    },
-    {
-      id: 2,
-      name: "Burger",
-      price: 8.99,
-      image: './../../assets/pizza.jpeg',
-      quantity: 0
-    }
-  ]);
+  const [itemsInCart, setItemsInCart] = useState<IFood[]>([]);
   const [subTotal, setSubTotal] = useState(0);
   const [fees, setFees] = useState(0);
   const [total, setTotal] = useState(0);
 
-  function calculateNewCost() {
-    setItemsInCart(prevItems => {
-      const newSubTotal = prevItems.reduce((total, item) => {
-        return total + (item.price * item.quantity);
-      }, 0);
-      setSubTotal(newSubTotal);
-      
-      const newFees = newSubTotal * 0.1;
-      setFees(newFees);
-  
-      const newTotal = newSubTotal + newFees;
-      setTotal(newTotal);
-  
-      return prevItems;
-    });
+  function calculateNewCost(cartItems: IFood[]) {
+    const newSubTotal = cartItems.reduce((total, item) => {
+      return total + (item.price * item.quantity);
+    }, 0);
+    setSubTotal(newSubTotal);
+    
+    const newFees = newSubTotal * 0.1;
+    setFees(newFees);
+
+    const newTotal = newSubTotal + newFees;
+    setTotal(newTotal);
   }  
 
-  function increaseQuantity(id: number) {
-    setItemsInCart(prev => prev.map(val => {
-      if (val.id === id) {
-        return {
-          ...val,
-          quantity: val.quantity + 1,
-        };
-      }
+  async function increaseQuantity(id: string) {
+    setItemsInCart(prev => {
+      const newData = prev.map(val => {
+        if (val._id === id) {
+          return {
+            ...val,
+            quantity: val.quantity + 1,
+          };
+        }
+  
+        return val;
+      })
 
-      return val;
-    }))
+      updateCart(newData);
+      calculateNewCost(newData);
 
-    calculateNewCost();
+      return newData;
+    });
   }
 
-  function decreaseQuantity(id: number) {
-    setItemsInCart(prev => prev.map(val => {
-      if (val.id === id) {
-        return {
-          ...val,
-          quantity: val.quantity - 1,
-        };
-      }
+  function decreaseQuantity(id: string) {
+    setItemsInCart(prev => {
+      const newData = prev
+        .map(val => {
+          if (val._id === id) {
+            const data = {
+              ...val,
+              quantity: val.quantity - 1,
+            };
 
-      return val;
-    }))
+            return data;
+          }
+    
+          return val;
+        })
+        .filter(val => val.quantity > 0);
 
-    const item = itemsInCart.filter(item => item.id === id);
+      updateCart(newData);
+      calculateNewCost(newData);
 
-    if (item[0].quantity <= 0) {
-      setItemsInCart(prev => prev.filter(item => item.id !== id));
-    }
-
-    calculateNewCost();
+      return newData;
+    });
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cartItems = await getCartItems();
+  
+        setItemsInCart(cartItems);
+        calculateNewCost(cartItems);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [])
 
   return (
     <View style={styles.container}>

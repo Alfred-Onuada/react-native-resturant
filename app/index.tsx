@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image } from 'r
 import { router, Stack } from 'expo-router';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { getUserType } from './services/auth';
+import storage from './utils/storage';
 
 export default function App() {
   const [registerClicked, setRegisterClicked] = useState(false);
