@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 const url = 'mongodb+srv://adminUser:mcrA2YudwKcxo59H@todo-db.az8gh.mongodb.net/';
 const client = new MongoClient(url);
@@ -88,6 +88,55 @@ const client = new MongoClient(url);
         const foodItems = await cursor.toArray();
 
         res.status(200).json(foodItems);
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    })
+
+    app.post('/cart', async (req, res) => {
+      try {
+        const data = req.body;
+        const purchase = {
+          items: data.items,
+          buyerId: data.userInfo._id,
+          total: data.total,
+          amount: data.amount * 100,
+          fees: data.fees,
+          status: 'pending',
+        }
+
+        const insertInfo = await db.collection('purchases').insertOne(purchase);
+
+        const params = {
+          reference: insertInfo.insertedId,
+          email: data.userInfo.email,
+          amount: data.amount,
+          callback_url: 'https://google.com',
+          metadata: { cancel_action: 'https://bing.com' }
+        };
+        
+        const resp = await fetch('https://api.paystack.co/transaction/initialize', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer sk_test_04a262dcbfb776c552281036bdd432af7de2c720',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(params)
+        });
+
+        const paystackData = await resp.json();
+
+        res.status(201).send(paystackData.data.authorization_url)
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    })
+
+    app.patch('/cart/success/:ref', async (req, res) => {
+      try {
+        await db.collection('purchases').updateOne({_id: new ObjectId(req.params.ref), status: 'pending'}, {$set: {status: 'success'}});
+
+        res.status(200).send();
       } catch (error) {
         res.status(500).json({message: error.message});
       }

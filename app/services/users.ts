@@ -1,5 +1,6 @@
 import { IFood } from "../interfaces/food";
 import storage from "../utils/storage";
+import { getUserType } from "./auth";
 
 export async function getFoodItems() {
   try {
@@ -71,4 +72,28 @@ export async function updateCart(items: IFood[]) {
   });
 
   return;
+}
+
+export async function checkoutCart(items: IFood[], amount: number, fees: number, total: number) {
+  const userInfo = await storage.load({
+    key: 'userInfo'
+  })
+
+  const respData = await fetch('http://localhost:6777/cart', {
+    method: 'POST',
+    body: JSON.stringify({items, userInfo, amount, total, fees}),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await respData.text();
+
+  return data;
+}
+
+export async function handleTransferSuccess(ref: string) {
+  await fetch('http://localhost:6777/cart/success/' + ref, {
+    method: 'PATCH'
+  });
 }

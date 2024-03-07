@@ -1,15 +1,51 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
 import CartItem from '../components/cart-item';
 import { Stack } from 'expo-router';
-import { getCartItems, updateCart } from '../services/users';
+import { checkoutCart, getCartItems, handleTransferSuccess, updateCart } from '../services/users';
 import { IFood } from '../interfaces/food';
+import PaymentWebView from '../components/payment-webview';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import showToast from '../utils/showToast';
+import { WebViewNavigation } from 'react-native-webview';
 
 export default function Cart() {
   const [itemsInCart, setItemsInCart] = useState<IFood[]>([]);
   const [subTotal, setSubTotal] = useState(0);
   const [fees, setFees] = useState(0);
   const [total, setTotal] = useState(0);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [bottomSheetIsOpen, setBottomSheetIsOpen] = useState(false);
+  const [checkoutUrl, setCheckoutUrl] = useState('https://google.com');
+
+  async function handleNavigationChange(event: WebViewNavigation) {
+    const url = new URL(event.url);
+    const params = new URLSearchParams(url.search);
+    const ref = params.get("reference") || '';
+
+    console.log(event.url)
+    if (event.url.startsWith("https://google.com")) {
+      await handleTransferSuccess(ref);
+      await updateCart([]);
+      bottomSheetRef.current?.close();
+    }
+  }
+
+  async function handleCheckout() {
+    try {
+      const data = await checkoutCart(itemsInCart, subTotal, fees, total);
+      setCheckoutUrl(data)
+
+      bottomSheetRef.current?.snapToPosition('100%');
+      setBottomSheetIsOpen(true);
+    } catch (error: any) {
+      bottomSheetRef.current?.snapToPosition('1%');
+      setBottomSheetIsOpen(false);
+
+      showToast({msg: error.message, danger: true})
+    }
+  };
 
   function calculateNewCost(cartItems: IFood[]) {
     const newSubTotal = cartItems.reduce((total, item) => {
@@ -82,7 +118,7 @@ export default function Cart() {
   }, [])
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <Stack.Screen
         options={{
           title: 'Your Cart',
@@ -95,28 +131,39 @@ export default function Cart() {
         }}
       />
 
-      <FlatList 
-        data={itemsInCart}
-        renderItem={({item}) => <CartItem data={item} 
-          increaseQuantity={increaseQuantity}
-          decreaseQuantity={decreaseQuantity}
-          />}/>
-      <View style={{...styles.costRow, marginTop: 25}}>
-        <Text style={styles.costTitle}>Subtotal</Text>
-        <Text style={styles.cost}>₦{subTotal.toFixed(2)}</Text>
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={['1%','100%']}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: 'white' }}
+        onClose={() => setBottomSheetIsOpen(false)}>
+          <PaymentWebView url={checkoutUrl} handleNavigationChange={handleNavigationChange} />
+      </BottomSheet>
+
+      <View style={bottomSheetIsOpen ? {zIndex: -1, flex: 1} : {flex: 1}}>
+        <FlatList 
+          data={itemsInCart}
+          renderItem={({item}) => <CartItem data={item} 
+            increaseQuantity={increaseQuantity}
+            decreaseQuantity={decreaseQuantity}
+            />}/>
+        <View style={{...styles.costRow, marginTop: 25}}>
+          <Text style={styles.costTitle}>Subtotal</Text>
+          <Text style={styles.cost}>₦{subTotal.toFixed(2)}</Text>
+        </View>
+        <View style={styles.costRow}>
+          <Text style={styles.costTitle}>Fees</Text>
+          <Text style={styles.cost}>₦{fees.toFixed(2)}</Text>
+        </View>
+        <View style={styles.costRow}>
+          <Text style={styles.costTitle}>Total</Text>
+          <Text style={styles.cost}>₦{total.toFixed(2)}</Text>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={() => handleCheckout()}>
+          <Text style={styles.buttonText}>Checkout</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.costRow}>
-        <Text style={styles.costTitle}>Fees</Text>
-        <Text style={styles.cost}>₦{fees.toFixed(2)}</Text>
-      </View>
-      <View style={styles.costRow}>
-        <Text style={styles.costTitle}>Total</Text>
-        <Text style={styles.cost}>₦{total.toFixed(2)}</Text>
-      </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Checkout</Text>
-      </TouchableOpacity>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -154,4 +201,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600'
   },
+  contentContainer: {
+    flex: 1,
+  }
 });
