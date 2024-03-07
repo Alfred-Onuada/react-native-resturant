@@ -9,6 +9,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import showToast from '../utils/showToast';
 import { WebViewNavigation } from 'react-native-webview';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 export default function Cart() {
   const [itemsInCart, setItemsInCart] = useState<IFood[]>([]);
@@ -24,7 +25,6 @@ export default function Cart() {
     const params = new URLSearchParams(url.search);
     const ref = params.get("reference") || '';
 
-    console.log(event.url)
     if (event.url.startsWith("https://google.com")) {
       await handleTransferSuccess(ref);
       await updateCart([]);
@@ -119,50 +119,52 @@ export default function Cart() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: 'Your Cart',
-          headerStyle: { backgroundColor: '#cbc0aa' },
-          headerTitleStyle: {
-            fontWeight: '400',
-            fontSize: 18
-          },
-          headerBackTitleVisible: false
-        }}
-      />
+      <RootSiblingParent>
+        <Stack.Screen
+          options={{
+            title: 'Your Cart',
+            headerStyle: { backgroundColor: '#cbc0aa' },
+            headerTitleStyle: {
+              fontWeight: '400',
+              fontSize: 18
+            },
+            headerBackTitleVisible: false
+          }}
+        />
 
-      <BottomSheet
-        ref={bottomSheetRef}
-        snapPoints={['1%','100%']}
-        enablePanDownToClose={true}
-        backgroundStyle={{ backgroundColor: 'white' }}
-        onClose={() => setBottomSheetIsOpen(false)}>
-          <PaymentWebView url={checkoutUrl} handleNavigationChange={handleNavigationChange} />
-      </BottomSheet>
+        <BottomSheet
+          ref={bottomSheetRef}
+          snapPoints={['1%','100%']}
+          enablePanDownToClose={true}
+          backgroundStyle={{ backgroundColor: 'white' }}
+          onClose={() => setBottomSheetIsOpen(false)}>
+            <PaymentWebView url={checkoutUrl} handleNavigationChange={handleNavigationChange} />
+        </BottomSheet>
 
-      <View style={bottomSheetIsOpen ? {zIndex: -1, flex: 1} : {flex: 1}}>
-        <FlatList 
-          data={itemsInCart}
-          renderItem={({item}) => <CartItem data={item} 
-            increaseQuantity={increaseQuantity}
-            decreaseQuantity={decreaseQuantity}
-            />}/>
-        <View style={{...styles.costRow, marginTop: 25}}>
-          <Text style={styles.costTitle}>Subtotal</Text>
-          <Text style={styles.cost}>₦{subTotal.toFixed(2)}</Text>
+        <View style={bottomSheetIsOpen ? {zIndex: -1, flex: 1} : {flex: 1}}>
+          <FlatList 
+            data={itemsInCart}
+            renderItem={({item}) => <CartItem data={item} 
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
+              />}/>
+          <View style={{...styles.costRow, marginTop: 25}}>
+            <Text style={styles.costTitle}>Subtotal</Text>
+            <Text style={styles.cost}>₦{subTotal.toFixed(2)}</Text>
+          </View>
+          <View style={styles.costRow}>
+            <Text style={styles.costTitle}>Fees</Text>
+            <Text style={styles.cost}>₦{fees.toFixed(2)}</Text>
+          </View>
+          <View style={styles.costRow}>
+            <Text style={styles.costTitle}>Total</Text>
+            <Text style={styles.cost}>₦{total.toFixed(2)}</Text>
+          </View>
+          <TouchableOpacity style={styles.button} onPress={() => handleCheckout()}>
+            <Text style={styles.buttonText}>Checkout</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.costRow}>
-          <Text style={styles.costTitle}>Fees</Text>
-          <Text style={styles.cost}>₦{fees.toFixed(2)}</Text>
-        </View>
-        <View style={styles.costRow}>
-          <Text style={styles.costTitle}>Total</Text>
-          <Text style={styles.cost}>₦{total.toFixed(2)}</Text>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={() => handleCheckout()}>
-          <Text style={styles.buttonText}>Checkout</Text>
-        </TouchableOpacity>
-      </View>
+      </RootSiblingParent>
     </GestureHandlerRootView>
   );
 }

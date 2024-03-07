@@ -93,6 +93,17 @@ const client = new MongoClient(url);
       }
     })
 
+    app.get('/tables', async (req, res) => {
+      try {
+        const cursor = db.collection('tables').find();
+        const tables = await cursor.toArray();
+
+        res.status(200).json(tables);
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    })
+
     app.post('/cart', async (req, res) => {
       try {
         const data = req.body;
@@ -135,6 +146,20 @@ const client = new MongoClient(url);
     app.patch('/cart/success/:ref', async (req, res) => {
       try {
         await db.collection('purchases').updateOne({_id: new ObjectId(req.params.ref), status: 'pending'}, {$set: {status: 'success'}});
+
+        res.status(200).send();
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    })
+
+    app.patch('/table/:tableId', async (req, res) => {
+      try {
+        const table = await db.collection('tables').findOneAndUpdate({_id: new ObjectId(req.params.tableId), status: 'available'}, {$set: {status: 'occupied'}});
+
+        if (!table) {
+          res.status(400).json({message: 'This table is no longer available'});
+        }
 
         res.status(200).send();
       } catch (error) {

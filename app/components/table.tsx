@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 
-export default function Table({data}: {data: ITable}) {
+export default function Table({data, reserveTable}: {data: ITable, reserveTable: (id: string) => void}) {
   return (
     <View style={styles.container}>
       <View>
@@ -11,11 +11,11 @@ export default function Table({data}: {data: ITable}) {
       </View>
       {
         data.status === 'available' ? 
-          <TouchableOpacity style={styles.book}>
+          <TouchableOpacity style={styles.book} onPress={() => reserveTable(data._id)}>
             <Text style={styles.btnText}>Reserve</Text>
           </TouchableOpacity>
         :
-          <TouchableOpacity style={styles.booked}>
+          <TouchableOpacity style={styles.booked} disabled>
             <Text style={styles.btnText}>Not Available</Text>
           </TouchableOpacity>
       }

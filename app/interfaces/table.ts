@@ -1,5 +1,5 @@
 interface ITable {
-  id: number;
+  _id: string;
   number: string;
   capacity: number;
   status: string;

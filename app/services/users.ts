@@ -14,6 +14,18 @@ export async function getFoodItems() {
   }
 }
 
+export async function getTables() {
+  try {
+    const respData = await fetch('http://localhost:6777/tables');
+
+    const data = await respData.json();
+
+    return data;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function addItemToCart(item: IFood) {
   try {
     let resp = await storage.load({key: 'cart'});
@@ -74,7 +86,7 @@ export async function updateCart(items: IFood[]) {
   return;
 }
 
-export async function checkoutCart(items: IFood[], amount: number, fees: number, total: number) {
+export async function checkoutCart(items: IFood[] | ITable[], amount: number, fees: number, total: number) {
   const userInfo = await storage.load({
     key: 'userInfo'
   })
@@ -94,6 +106,12 @@ export async function checkoutCart(items: IFood[], amount: number, fees: number,
 
 export async function handleTransferSuccess(ref: string) {
   await fetch('http://localhost:6777/cart/success/' + ref, {
+    method: 'PATCH'
+  });
+};
+
+export async function reserveTableAPI(id: string) {
+  await fetch('http://localhost:6777/table/' + id, {
     method: 'PATCH'
   });
 }
