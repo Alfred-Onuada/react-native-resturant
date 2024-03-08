@@ -121,6 +121,7 @@ const PORT = process.env.PORT || 6777;
           amount: data.amount * 100,
           fees: data.fees,
           status: 'pending',
+          fulfiled: null
         }
 
         const insertInfo = await db.collection('purchases').insertOne(purchase);
@@ -181,7 +182,8 @@ const PORT = process.env.PORT || 6777;
           {
             $match: {
               fees: { $gt: 0 },
-              status: 'success'
+              status: 'success',
+              fulfiled: null
             }
           },
           {
@@ -215,6 +217,18 @@ const PORT = process.env.PORT || 6777;
         const tables = await cursor.toArray();
 
         res.status(200).json(tables)
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
+
+    app.patch('/incoming/food', async (req, res) => {
+      try {
+        const {waiter, fulfiled, ref} = req.query;
+
+        const a = await db.collection('purchases').updateOne({_id: new ObjectId(ref)},  { $set: { waiter: new ObjectId(waiter), fulfiled: fulfiled == 'true' } });
+
+        res.status(200).send();
       } catch (error) {
         res.status(500).json({message: error.message});
       }

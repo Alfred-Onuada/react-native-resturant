@@ -1,14 +1,6 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
-export default function OrderItem({ item }: {item: IOrder}) {
-  const handleApprove = (orderId: string) => {
-    console.log('Approve order:', orderId);
-  };
-  
-  const handleReject = (orderId: string) => {
-    console.log('Reject order:', orderId);
-  };
-
+export default function OrderItem({ item, handleApprove, handleReject }: {item: IOrder, handleApprove: (id: string) => void, handleReject: (id: string) => void}) {
   return (
     <View style={{ padding: 20, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
       <Text style={styles.customerName}>{item.userInfo.fullname}</Text>

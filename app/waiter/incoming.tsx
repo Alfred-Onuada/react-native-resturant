@@ -5,6 +5,7 @@ import OrderItem from '../components/incoming-order';
 import ReservationItem from '../components/incoming-reservation';
 import { logoutAPI } from '../services/users';
 import { getIncomingFood, getIncomingTables } from '../services/waiter';
+import { approveFood, rejectFood } from '../services/waiter';
 
 export default function Incoming() {
   const [activeTab, setActiveTab] = useState("orders");
@@ -35,6 +36,18 @@ export default function Incoming() {
 
     setReservations(tables);
   }
+
+  const handleApprove = async (orderId: string) => {
+    await approveFood(orderId);
+
+    setOrders(prev => prev.filter(o => o._id?.toString() !== orderId.toString()));
+  };
+  
+  const handleReject = async (orderId: string) => {
+    await rejectFood(orderId);
+
+    setOrders(prev => prev.filter(o => o._id?.toString() !== orderId.toString()));
+  };
 
   useEffect(() => {
     loadOrders();
@@ -81,7 +94,7 @@ export default function Incoming() {
         activeTab === 'orders' &&
         <FlatList
           data={orders}
-          renderItem={OrderItem}
+          renderItem={({item}) => <OrderItem item={item} handleApprove={handleApprove} handleReject={handleReject} />}
           keyExtractor={(item) => item._id.toString()}/>
       }
 
