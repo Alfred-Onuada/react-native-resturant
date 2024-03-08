@@ -6,6 +6,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const url = 'mongodb+srv://adminUser:mcrA2YudwKcxo59H@todo-db.az8gh.mongodb.net/';
 const client = new MongoClient(url);
 
+const PORT = process.env.PORT || 6777;
 
 (async function () {
   try {
@@ -167,7 +168,7 @@ const client = new MongoClient(url);
       }
     })
 
-    app.listen(6777, () => {
+    app.listen(PORT, () => {
       console.log('Server is live');
     })
   } catch (error) {
