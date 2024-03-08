@@ -4,4 +4,5 @@ interface ITable {
   capacity: number;
   status: string;
   price: number;
+  time: Date
 }

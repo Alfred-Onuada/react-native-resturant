@@ -108,9 +108,15 @@ const PORT = process.env.PORT || 6777;
     app.post('/cart', async (req, res) => {
       try {
         const data = req.body;
+        data.items = data.items.map(d => {
+          d._id = new ObjectId(d._id);
+
+          return d;
+        });
+
         const purchase = {
           items: data.items,
-          buyerId: data.userInfo._id,
+          buyerId: new ObjectId(data.userInfo._id),
           total: data.total,
           amount: data.amount * 100,
           fees: data.fees,
@@ -167,6 +173,52 @@ const PORT = process.env.PORT || 6777;
         res.status(500).json({message: error.message});
       }
     })
+
+    app.get('/incoming/food', async (req, res) => {
+      try {
+        // food is any purchase that has fees
+        const cursor = db.collection('purchases').aggregate([
+          {
+            $match: {
+              fees: { $gt: 0 },
+              status: 'success'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'buyerId',
+              foreignField: '_id',
+              as: 'userInfo'
+            }
+          },
+          {
+            $addFields: {
+              userInfo: {
+                $arrayElemAt: ['$userInfo', 0]
+              }
+            }
+          }
+        ]);
+        const foods = await cursor.toArray();
+
+        res.status(200).json(foods)
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
+
+    app.get('/incoming/table', async (req, res) => {
+      try {
+        // table is any purchase that has 0 fees
+        const cursor = db.collection('purchases').find({ fees: 0, status: 'pending' });
+        const tables = await cursor.toArray();
+
+        res.status(200).json(tables)
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
 
     app.listen(PORT, () => {
       console.log('Server is live');

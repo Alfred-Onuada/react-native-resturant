@@ -1,18 +1,14 @@
-import { Stack } from 'expo-router';
-import { useState } from 'react';
+import { Stack, router, useNavigation } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, FlatList } from 'react-native';
 import OrderItem from '../components/incoming-order';
 import ReservationItem from '../components/incoming-reservation';
+import { logoutAPI } from '../services/users';
+import { getIncomingFood, getIncomingTables } from '../services/waiter';
 
 export default function Incoming() {
   const [activeTab, setActiveTab] = useState("orders");
-  const [orders, setOrders] = useState([
-    { id: 1, customerName: 'James Onoja', amountPaid: 500, orderDetails: [{ itemName: 'French Fries', quantity: 18 }, { itemName: 'Pizza', quantity: 5 }] },
-    { id: 2, customerName: 'John Doe', amountPaid: 300, orderDetails: [{ itemName: 'Burger', quantity: 2 }, { itemName: 'Coke', quantity: 3 }] },
-    { id: 3, customerName: 'Jane Smith', amountPaid: 700, orderDetails: [{ itemName: 'Salad', quantity: 1 }, { itemName: 'Steak', quantity: 2 }] },
-    { id: 4, customerName: 'Alice Johnson', amountPaid: 450, orderDetails: [{ itemName: 'Pasta', quantity: 3 }, { itemName: 'Garlic Bread', quantity: 2 }] },
-    { id: 5, customerName: 'Bob Brown', amountPaid: 550, orderDetails: [{ itemName: 'Sushi', quantity: 8 }, { itemName: 'Tempura', quantity: 4 }] }
-  ]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [reservations, setReservations] = useState([
     { id: 1, tableName: 'Table 1', customerInfo: '1:30pm, James Onoja', amountPaid: 500 },
     { id: 2, tableName: 'Table 2', customerInfo: '2:00pm, John Doe', amountPaid: 300 },
@@ -20,6 +16,35 @@ export default function Incoming() {
     { id: 4, tableName: 'Table 4', customerInfo: '3:00pm, Alice Johnson', amountPaid: 450 },
     { id: 5, tableName: 'Table 5', customerInfo: '3:30pm, Bob Brown', amountPaid: 550 },
   ]);
+  const navigation = useNavigation();
+
+  async function logout() {
+    await logoutAPI();
+
+    router.navigate('/');
+  }
+
+  async function loadOrders() {
+    const orders = await getIncomingFood();
+
+    setOrders(orders);
+  }
+
+  async function loadReservations() {
+    const tables = await getIncomingTables();
+
+    setReservations(tables);
+  }
+
+  useEffect(() => {
+    loadOrders();
+    loadReservations();
+  }, [])
+
+  navigation.addListener("focus", () => {
+    loadOrders();
+    loadReservations();
+  });
 
   return (
     <View style={styles.container}>
@@ -31,6 +56,13 @@ export default function Incoming() {
             fontWeight: '400',
             fontSize: 18
           },
+          headerRight: (props) => {
+            return (
+              <Pressable onPress={() => logout()}>
+                <Text>Log Out</Text>
+              </Pressable>
+            );
+          }
         }}
       />
 
@@ -50,7 +82,7 @@ export default function Incoming() {
         <FlatList
           data={orders}
           renderItem={OrderItem}
-          keyExtractor={(item) => item.id.toString()}/>
+          keyExtractor={(item) => item._id.toString()}/>
       }
 
       {/* Seats */}

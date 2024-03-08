@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableOpacity, Text, TextInput } from 'react-native';
 import { Stack } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import Table from '../components/table';
@@ -22,7 +22,7 @@ export default function SeatReservation() {
     const params = new URLSearchParams(url.search);
     const ref = params.get("reference") || '';
 
-    if (event.url.startsWith("https://google.com") && tableId.length) {
+    if (ref && tableId.length) {
       bottomSheetRef.current?.close();
 
       await reserveTableAPI(tableId);
@@ -59,7 +59,7 @@ export default function SeatReservation() {
 
   useEffect(() => {
     (async () => {
-      const data = await getTables();
+      const data: ITable[] = await getTables();
 
       setTables(data);
     })();

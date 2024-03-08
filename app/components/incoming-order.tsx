@@ -1,30 +1,30 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 export default function OrderItem({ item }: {item: IOrder}) {
-  const handleApprove = (orderId: number) => {
+  const handleApprove = (orderId: string) => {
     console.log('Approve order:', orderId);
   };
   
-  const handleReject = (orderId: number) => {
+  const handleReject = (orderId: string) => {
     console.log('Reject order:', orderId);
   };
 
   return (
     <View style={{ padding: 20, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-      <Text style={styles.customerName}>{item.customerName}</Text>
-      <Text style={{ ...styles.amountPaid, marginVertical: 5 }}>₦{item.amountPaid}</Text>
+      <Text style={styles.customerName}>{item.userInfo.fullname}</Text>
+      <Text style={{ ...styles.amountPaid, marginVertical: 5 }}>₦{item.amount}</Text>
       <Text style={styles.orderDetailsTitle}>Order Details</Text>
-      {item.orderDetails.map((detail, index) => (
+      {item.items.map((detail, index) => (
         <View key={index} style={styles.rowDown}>
-          <Text style={styles.orderName}>{detail.itemName}</Text>
+          <Text style={styles.orderName}>{detail.name}</Text>
           <Text style={styles.quantity}>x{detail.quantity}</Text>
         </View>
       ))}
       <View style={styles.row}>
-        <TouchableOpacity onPress={() => handleApprove(item.id)} style={styles.approveBtn}>
+        <TouchableOpacity onPress={() => handleApprove(item._id.toString())} style={styles.approveBtn}>
           <Text style={styles.approveText}>Approve</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleReject(item.id)} style={styles.rejectBtn}>
+        <TouchableOpacity onPress={() => handleReject(item._id.toString())} style={styles.rejectBtn}>
           <Text style={styles.rejectText}>Reject</Text>
         </TouchableOpacity>
       </View>

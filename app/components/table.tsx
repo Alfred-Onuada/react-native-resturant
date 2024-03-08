@@ -1,5 +1,7 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
+import { Picker } from '@react-native-picker/picker';
+import { formatDate } from '../utils/format-date';
 
 export default function Table({data, reserveTable}: {data: ITable, reserveTable: (id: string) => void}) {
   return (
@@ -9,6 +11,7 @@ export default function Table({data, reserveTable}: {data: ITable, reserveTable:
         <Text style={styles.capacity}>{data.capacity} seat(s)</Text>
         <Text style={styles.price}>₦{data.price}</Text>
       </View>
+
       {
         data.status === 'available' ? 
           <TouchableOpacity style={styles.book} onPress={() => reserveTable(data._id)}>
@@ -28,7 +31,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     marginBottom: 20
   },
   name: {
@@ -59,5 +62,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: 'gray'
+  },
+  date: {
+    marginBottom: 5
   }
 });
