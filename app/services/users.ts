@@ -1,10 +1,12 @@
 import { IFood } from "../interfaces/food";
 import storage from "../utils/storage";
-import { getUserType } from "./auth";
+
+// const base_url = "https://resturant-server-zgh4.onrender.com";
+const base_url = "http://localhost:6777";
 
 export async function getFoodItems() {
   try {
-    const respData = await fetch('http://localhost:6777/foods');
+    const respData = await fetch(base_url + '/foods');
 
     const data = await respData.json();
 
@@ -16,7 +18,7 @@ export async function getFoodItems() {
 
 export async function getTables() {
   try {
-    const respData = await fetch('http://localhost:6777/tables');
+    const respData = await fetch(base_url + '/tables');
 
     const data = await respData.json();
 
@@ -91,7 +93,7 @@ export async function checkoutCart(items: IFood[] | ITable[], amount: number, fe
     key: 'userInfo'
   })
 
-  const respData = await fetch('http://localhost:6777/cart', {
+  const respData = await fetch(base_url + '/cart', {
     method: 'POST',
     body: JSON.stringify({items, userInfo, amount, total, fees}),
     headers: {
@@ -105,13 +107,13 @@ export async function checkoutCart(items: IFood[] | ITable[], amount: number, fe
 }
 
 export async function handleTransferSuccess(ref: string) {
-  await fetch('http://localhost:6777/cart/success/' + ref, {
+  await fetch(base_url + '/cart/success/' + ref, {
     method: 'PATCH'
   });
 };
 
 export async function reserveTableAPI(id: string) {
-  await fetch('http://localhost:6777/table/' + id, {
+  await fetch(base_url + '/table/' + id, {
     method: 'PATCH'
   });
 }

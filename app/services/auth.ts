@@ -1,6 +1,9 @@
 import { IRegister } from "../interfaces/register";
 import storage from "../utils/storage";
 
+// const base_url = "https://resturant-server-zgh4.onrender.com";
+const base_url = "http://localhost:6777";
+
 export async function registerAPI(data: IRegister) {
   const keys = Object.keys(data);
   const dataIsSet = keys.every(key => (data as any)[key].trim().length > 0);
@@ -9,7 +12,7 @@ export async function registerAPI(data: IRegister) {
     throw Error("Please enter all required values")
   }
 
-  const resp = await fetch('http://localhost:6777/register', {
+  const resp = await fetch(base_url + '/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +42,7 @@ export async function loginAPI(email: string, password: string) {
     throw Error("Please enter all required values")
   }
 
-  const resp = await fetch('http://localhost:6777/login', {
+  const resp = await fetch(base_url + '/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -25,7 +25,8 @@
     "react-native-storage": "^1.0.1",
     "react-native-webview": "13.6.4",
     "react-native-reanimated": "~3.6.2",
-    "react-native-gesture-handler": "~2.14.0"
+    "react-native-gesture-handler": "~2.14.0",
+    "expo-dev-client": "~3.3.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
