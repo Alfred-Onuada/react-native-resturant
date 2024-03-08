@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View, Text, Pressable } from 'react-native';
 import MenuItem from '../components/menu-item';
 import { Link, router, Stack, useNavigation } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { addItemToCart, getCartItems, getFoodItems } from '../services/users';
+import { addItemToCart, getCartItems, getFoodItems, logoutAPI } from '../services/users';
 import showToast from '../utils/showToast';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { IFood } from '../interfaces/food';
@@ -21,6 +21,12 @@ export default function Menu() {
     const itemsInCartCount = await addItemToCart(item);
 
     setNoItemsInCart(itemsInCartCount);
+  }
+
+  async function logout() {
+    await logoutAPI();
+
+    router.navigate('/');
   }
 
   async function loadMenu() {
@@ -57,7 +63,14 @@ export default function Menu() {
               fontWeight: '400',
               fontSize: 18
             },
-            headerBackVisible: false
+            headerBackVisible: false,
+            headerRight: (props) => {
+              return (
+                <Pressable onPress={() => logout()}>
+                  <Text>Log Out</Text>
+                </Pressable>
+              );
+            }
           }}
         />
 

@@ -43,7 +43,7 @@ export default function App() {
           router.replace('/admin/menu-management')
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     })();
   }, [])

@@ -1,8 +1,8 @@
 import { IFood } from "../interfaces/food";
 import storage from "../utils/storage";
 
-// const base_url = "https://resturant-server-zgh4.onrender.com";
-const base_url = "http://localhost:6777";
+const base_url = "https://resturant-server-zgh4.onrender.com";
+// const base_url = "http://localhost:6777";
 
 export async function getFoodItems() {
   try {
@@ -116,4 +116,8 @@ export async function reserveTableAPI(id: string) {
   await fetch(base_url + '/table/' + id, {
     method: 'PATCH'
   });
+}
+
+export async function logoutAPI() {
+  await storage.remove({key: 'userInfo'});
 }
