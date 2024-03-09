@@ -10,13 +10,7 @@ import { approveFood, rejectFood } from '../services/waiter';
 export default function Incoming() {
   const [activeTab, setActiveTab] = useState("orders");
   const [orders, setOrders] = useState<IOrder[]>([]);
-  const [reservations, setReservations] = useState([
-    { id: 1, tableName: 'Table 1', customerInfo: '1:30pm, James Onoja', amountPaid: 500 },
-    { id: 2, tableName: 'Table 2', customerInfo: '2:00pm, John Doe', amountPaid: 300 },
-    { id: 3, tableName: 'Table 3', customerInfo: '2:30pm, Jane Smith', amountPaid: 700 },
-    { id: 4, tableName: 'Table 4', customerInfo: '3:00pm, Alice Johnson', amountPaid: 450 },
-    { id: 5, tableName: 'Table 5', customerInfo: '3:30pm, Bob Brown', amountPaid: 550 },
-  ]);
+  const [reservations, setReservations] = useState<IReservation[]>([]);
   const navigation = useNavigation();
 
   async function logout() {
@@ -104,7 +98,7 @@ export default function Incoming() {
         <FlatList
           data={reservations}
           renderItem={ReservationItem}
-          keyExtractor={(item) => item.id.toString()}/>
+          keyExtractor={(item) => item._id.toString()}/>
       }
     </View>
   );

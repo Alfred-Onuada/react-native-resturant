@@ -1,5 +1,5 @@
 interface IReservation {
-  id: number;
+  _id: string;
   tableName: string;
   customerInfo: string;
   amountPaid: number;

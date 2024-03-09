@@ -1,11 +1,11 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 export default function ReservationItem({ item }: { item: IReservation }) {
-  const handleApprove = (orderId: number) => {
+  const handleApprove = (orderId: string) => {
     console.log('Approve order:', orderId);
   };
   
-  const handleReject = (orderId: number) => {
+  const handleReject = (orderId: string) => {
     console.log('Reject order:', orderId);
   };
 
@@ -15,10 +15,10 @@ export default function ReservationItem({ item }: { item: IReservation }) {
       <Text style={styles.customerInfo}>{item.customerInfo}</Text>
       <Text style={styles.amountPaid}>₦{item.amountPaid}</Text>
       <View style={styles.row}>
-        <TouchableOpacity onPress={() => handleApprove(item.id)} style={styles.approveBtn}>
+        <TouchableOpacity onPress={() => handleApprove(item._id)} style={styles.approveBtn}>
           <Text style={styles.approveText}>Approve</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleReject(item.id)} style={styles.rejectBtn}>
+        <TouchableOpacity onPress={() => handleReject(item._id)} style={styles.rejectBtn}>
           <Text style={styles.rejectText}>Reject</Text>
         </TouchableOpacity>
       </View>
