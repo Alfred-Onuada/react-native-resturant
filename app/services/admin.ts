@@ -25,3 +25,18 @@ export async function saveItemEditAPI(food: IFood) {
 
   return;
 }
+
+export async function addItemAPI(food: IFood) {
+  const data = JSON.parse(JSON.stringify(food));
+  delete (data as any)._id;
+  
+  await fetch(base_url + '/foods', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return;
+}

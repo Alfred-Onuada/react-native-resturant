@@ -256,6 +256,16 @@ const PORT = process.env.PORT || 6777;
       }
     });
 
+    app.post('/foods', async (req, res) => {
+      try {
+        await db.collection('foods').insertOne(req.body);
+
+        res.status(201).json();
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
+
     app.listen(PORT, () => {
       console.log('Server is live');
     })

@@ -6,14 +6,16 @@ import AdminMenuItem from "../components/admin-menu-item";
 import { IFood } from "../interfaces/food";
 import { getFoodItems } from "../services/users";
 import showToast from "../utils/showToast";
-import { deleteItemAPI, saveItemEditAPI } from "../services/admin";
+import { addItemAPI, deleteItemAPI, saveItemEditAPI } from "../services/admin";
 import { RootSiblingParent } from 'react-native-root-siblings';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function MenuManagement() {
   const [foods, setFoods]= useState<IFood[]>([]);
   const [modalFood, setModalFood] = useState<IFood>({name: '', _id: '', image: '', price: 0});
+  const [newFoodModal, setNewFoodModal] = useState<IFood>({name: '', _id: '', image: '', price: 0});
   const [foodModalIsOpen, setFoodModalIsOpen] = useState(false);
+  const [newFoodModalIsOpen, setNewFoodModalIsOpen] = useState(false);
   const navigation = useNavigation();
   
   async function loadMenu() {
@@ -41,7 +43,6 @@ export default function MenuManagement() {
       }
 
       setModalFood(selectedFood);
-      // TODO:
     } catch (error: any) {
       showToast({msg: error.message, danger: true})
     }
@@ -72,6 +73,19 @@ export default function MenuManagement() {
     }
   }
 
+  async function addFood() {
+    try {
+      await addItemAPI(newFoodModal);
+
+      showToast({msg: 'Food Added Successfully'});
+
+      await loadMenu();
+      setNewFoodModalIsOpen(false);
+    } catch (error: any) {
+      showToast({msg: error.message, danger: true})
+    }
+  }
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -83,6 +97,20 @@ export default function MenuManagement() {
 
     if (result.canceled === false) {
       setModalFood(prev => ({...prev, image: (result.assets as any)[0].uri}));
+    }    
+  };
+
+  const pickNewImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (result.canceled === false) {
+      setNewFoodModal(prev => ({...prev, image: (result.assets as any)[0].uri}));
     }    
   };
 
@@ -149,6 +177,48 @@ export default function MenuManagement() {
             </View>
         </Modal>
 
+        <Modal
+          visible={newFoodModalIsOpen}
+          animationType="slide">
+            <View style={{flex: 1, marginTop: 70, marginHorizontal: 40}}>
+              <Text style={{fontSize: 17, marginBottom: 10}}>Name</Text>
+              <TextInput
+                placeholder="Enter new food name"
+                value={newFoodModal.name}
+                style={styles.input}
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setNewFoodModal(prev => ({...prev, name: text}))
+                }} />
+              <Text style={{fontSize: 17, marginBottom: 10}}>Price</Text>
+              <TextInput
+                placeholder="Enter new price"
+                value={newFoodModal.price.toString()}
+                style={styles.input}
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setNewFoodModal(prev => ({...prev, price: +text}))
+                }} />
+              <Pressable onPress={pickNewImage}>
+                <Text style={{marginBottom: 10, fontSize: 20, color: 'blue'}}>Select an Image</Text>
+              </Pressable>
+
+
+              <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+                <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setNewFoodModalIsOpen(false)}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalSaveBtn} onPress={addFood}>
+                  <Text style={styles.buttonText}>Add</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </Modal>
+
         <FlatList
           style={{marginTop: 20}}
           data={foods}
@@ -157,7 +227,7 @@ export default function MenuManagement() {
           />
 
         <View style={{paddingHorizontal: 20}}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => setNewFoodModalIsOpen(true)}>
             <Text style={styles.buttonText}>Add Item</Text>
           </TouchableOpacity>
         </View>
