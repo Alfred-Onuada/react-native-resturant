@@ -1,10 +1,10 @@
-import { Stack, useNavigation } from "expo-router";
+import { Stack, router, useNavigation } from "expo-router";
 import { FlatList, StyleSheet, View, TouchableOpacity, Text, Modal, TextInput, Button, Pressable } from "react-native";
 import BottomNav from "../components/bottom-nav";
 import { useEffect, useState } from "react";
 import AdminMenuItem from "../components/admin-menu-item";
 import { IFood } from "../interfaces/food";
-import { getFoodItems } from "../services/users";
+import { getFoodItems, logoutAPI } from "../services/users";
 import showToast from "../utils/showToast";
 import { addItemAPI, deleteItemAPI, saveItemEditAPI } from "../services/admin";
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -12,8 +12,8 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function MenuManagement() {
   const [foods, setFoods]= useState<IFood[]>([]);
-  const [modalFood, setModalFood] = useState<IFood>({name: '', _id: '', image: '', price: 0});
-  const [newFoodModal, setNewFoodModal] = useState<IFood>({name: '', _id: '', image: '', price: 0});
+  const [modalFood, setModalFood] = useState<IFood>({name: '', _id: '', image: '', price: 0, quantity: 0});
+  const [newFoodModal, setNewFoodModal] = useState<IFood>({name: '', _id: '', image: '', price: 0, quantity: 0});
   const [foodModalIsOpen, setFoodModalIsOpen] = useState(false);
   const [newFoodModalIsOpen, setNewFoodModalIsOpen] = useState(false);
   const navigation = useNavigation();
@@ -114,6 +114,12 @@ export default function MenuManagement() {
     }    
   };
 
+  async function logout() {
+    await logoutAPI();
+
+    router.navigate('/');
+  }
+
   useEffect(() => {
     loadMenu()
   }, []);
@@ -131,7 +137,14 @@ export default function MenuManagement() {
               fontWeight: '400',
               fontSize: 18
             },
-            headerBackTitleVisible: false
+            headerBackTitleVisible: false,
+            headerRight: (props) => {
+              return (
+                <Pressable onPress={() => logout()}>
+                  <Text>Log Out</Text>
+                </Pressable>
+              );
+            }
           }}
         />
 
