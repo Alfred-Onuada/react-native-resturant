@@ -1,7 +1,7 @@
 import storage from "../utils/storage";
 
-// const base_url = "http://localhost:6777";
-const base_url = "https://resturant-server-zgh4.onrender.com";
+const base_url = "http://localhost:6777";
+// const base_url = "https://resturant-server-zgh4.onrender.com";
 
 export async function getIncomingFood() {
   const resp = await fetch(base_url + '/incoming/food');

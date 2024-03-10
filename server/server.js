@@ -101,11 +101,51 @@ const PORT = process.env.PORT || 6777;
 
     app.get("/tables", async (req, res) => {
       try {
+        // read all the tables, if the reservedDates is less than 7, then it is available, else set the status as occupied
+        // and also if any date in the reservedDates has passed delete that date from the reservedDates array and update the table
+        // then send the result to the user
         const cursor = db.collection("tables").find();
         const tables = await cursor.toArray();
 
-        res.status(200).json(tables);
+        tables.forEach(async (table) => {
+          const reservedDates = table.reservedDates;
+          const currentDate = new Date().toISOString().split("T")[0];
+
+          const newReservedDates = reservedDates.filter(
+            (date) => date >= currentDate
+          );
+
+          if (newReservedDates.length !== reservedDates.length) {
+            await db
+              .collection("tables")
+              .updateOne(
+                { _id: new ObjectId(table._id) },
+                { $set: { reservedDates: newReservedDates } }
+              );
+          }
+        });
+
+        // run the availabiltity aggregation
+        const cursor2 = db.collection("tables").aggregate([
+          {
+            $addFields: {
+              status: {
+                $cond: {
+                  if: {
+                    $eq: [{ $size: "$reservedDates" }, 7],
+                  },
+                  then: "occupied",
+                  else: "available",
+                },
+              },
+            },
+          },
+        ]);
+        const tables2 = await cursor2.toArray();
+
+        res.status(200).json(tables2);
       } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
       }
     });
@@ -176,20 +216,42 @@ const PORT = process.env.PORT || 6777;
       }
     });
 
-    app.patch("/table/:tableId", async (req, res) => {
+    app.patch("/table", async (req, res) => {
       try {
-        const table = await db
-          .collection("tables")
-          .findOneAndUpdate(
-            { _id: new ObjectId(req.params.tableId), status: "available" },
-            { $set: { status: "occupied" } }
-          );
+        const {_id} = req.body;
+
+        const table = await db.collection("tables").findOne({ _id: new ObjectId(_id) });
 
         if (!table) {
           res
             .status(400)
-            .json({ message: "This table is no longer available" });
+            .json({ message: "This table was not found" });
+          return;
         }
+
+        if (table.reservedDates.length === 7) {
+          res.status(400).json({message: "This table is fully booked"});
+          return;
+        }
+
+        const reservedDates = table.reservedDates;
+
+        // check that none of the current reserved dates is equal to the date of the req.body.time
+        const isReserved = reservedDates.some((date) => date.split("T")[0] === req.body.time.split("T")[0]);
+
+        if (isReserved) {
+          res.status(400).json({message: "This table is already booked for this time"});
+          return;
+        }
+
+        reservedDates.push(req.body.time);
+
+        await db
+          .collection("tables")
+          .updateOne(
+            { _id: new ObjectId(_id) },
+            { $set: { reservedDates } }
+          );
 
         res.status(200).send();
       } catch (error) {
