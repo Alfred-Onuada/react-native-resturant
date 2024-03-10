@@ -71,7 +71,7 @@ export default function SeatReservation() {
         <Stack.Screen
           options={{
             title: 'Book A Seat',
-            headerStyle: { backgroundColor: '#cbc0aa' },
+            headerStyle: { backgroundColor: '#8d8066' },
             headerTitleStyle: {
               fontWeight: '400',
               fontSize: 18
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 60,
-    backgroundColor: '#cbc0aa',
+    backgroundColor: '#8d8066',
     borderRadius: 5,
     display: 'flex',
     justifyContent: 'center',

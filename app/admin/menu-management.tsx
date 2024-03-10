@@ -132,7 +132,7 @@ export default function MenuManagement() {
         <Stack.Screen
           options={{
             title: 'Menu Management',
-            headerStyle: { backgroundColor: '#cbc0aa' },
+            headerStyle: { backgroundColor: '#8d8066' },
             headerTitleStyle: {
               fontWeight: '400',
               fontSize: 18
@@ -141,7 +141,7 @@ export default function MenuManagement() {
             headerRight: (props) => {
               return (
                 <Pressable onPress={() => logout()}>
-                  <Text>Log Out</Text>
+                  <Text style={{color: '#ffffff'}}>Log Out</Text>
                 </Pressable>
               );
             }
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 60,
-    backgroundColor: '#cbc0aa',
+    backgroundColor: '#8d8066',
     borderRadius: 5,
     display: 'flex',
     justifyContent: 'center',

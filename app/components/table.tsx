@@ -1,7 +1,4 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
-import { Picker } from '@react-native-picker/picker';
-import { formatDate } from '../utils/format-date';
 
 export default function Table({data, reserveTable}: {data: ITable, reserveTable: (id: string) => void}) {
   return (
@@ -52,7 +49,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   book: {
-    backgroundColor: '#cbc0aa',
+    backgroundColor: '#8d8066',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20

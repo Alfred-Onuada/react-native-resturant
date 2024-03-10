@@ -123,7 +123,7 @@ export default function Cart() {
         <Stack.Screen
           options={{
             title: 'Your Cart',
-            headerStyle: { backgroundColor: '#cbc0aa' },
+            headerStyle: { backgroundColor: '#8d8066' },
             headerTitleStyle: {
               fontWeight: '400',
               fontSize: 18
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   button: {
     width: 'auto',
     height: 60,
-    backgroundColor: '#cbc0aa',
+    backgroundColor: '#8d8066',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',

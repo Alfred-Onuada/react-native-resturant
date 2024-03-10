@@ -36,7 +36,7 @@ export default function Waiters() {
       await addWaiterAPI(waiterModal);
 
       setAddWaiterModalIsOpen(false);
-      setWaiterModal({ _id: '', fullname: '', email: '', phone: ''});
+      setWaiterModal({ _id: '', fullname: '', email: '', phone: '', password: ''});
       loadWaiters();
     } catch (error) {
       showToast({msg: 'Error adding waiter', danger: true});
@@ -50,7 +50,7 @@ export default function Waiters() {
       <Stack.Screen
         options={{
           title: 'Waiters',
-          headerStyle: { backgroundColor: '#cbc0aa' },
+          headerStyle: { backgroundColor: '#8d8066' },
           headerTitleStyle: {
             fontWeight: '400',
             fontSize: 18
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 60,
-    backgroundColor: '#cbc0aa',
+    backgroundColor: '#8d8066',
     borderRadius: 5,
     display: 'flex',
     justifyContent: 'center',

@@ -58,15 +58,17 @@ export default function Incoming() {
       <Stack.Screen
         options={{
           title: 'Incoming',
-          headerStyle: { backgroundColor: '#cbc0aa' },
+          headerStyle: { backgroundColor: '#8d8066' },
           headerTitleStyle: {
             fontWeight: '400',
             fontSize: 18
           },
+          headerBackTitleVisible: false,
+          headerBackVisible: false,
           headerRight: (props) => {
             return (
               <Pressable onPress={() => logout()}>
-                <Text>Log Out</Text>
+                <Text style={{color: '#ffffff'}}>Log Out</Text>
               </Pressable>
             );
           }

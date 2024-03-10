@@ -26,7 +26,7 @@ export default function PurchaseHistory() {
       <Stack.Screen
         options={{
           title: 'Purchase History',
-          headerStyle: { backgroundColor: '#cbc0aa' },
+          headerStyle: { backgroundColor: '#8d8066' },
           headerTitleStyle: {
             fontWeight: '400',
             fontSize: 18
