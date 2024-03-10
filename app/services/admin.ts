@@ -47,3 +47,33 @@ export async function getPurchases() {
 
   return data;
 }
+
+export async function getWaiters() {
+  const response = await fetch(base_url + '/waiters');
+  const data = await response.json();
+
+  return data;
+}
+
+export async function deleteWaiterAPI(id: string) {
+  await fetch(base_url + '/waiters/' + id, {
+    method: 'DELETE'
+  });
+
+  return;
+}
+
+export async function addWaiterAPI(waiter: IWaiter) {
+  const data = JSON.parse(JSON.stringify(waiter));
+  delete (data as any)._id;
+  
+  await fetch(base_url + '/waiters', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  return;
+}

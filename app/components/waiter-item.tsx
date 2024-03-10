@@ -1,16 +1,16 @@
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function WaiterItem({data}: {data: IWaiter}) {
+export default function WaiterItem({data, deleteWaiter}: {data: IWaiter, deleteWaiter: (id: string) => void}) {
   return (
     <View style={styles.container}>
       <View style={styles.infoContainer}>
         <View>
-          <Text style={styles.name}>{data.name}</Text>
+          <Text style={styles.name}>{data.fullname}</Text>
           <Text style={styles.email}>{data.email}</Text>
           <Text style={styles.phone}>{data.phone}</Text>
         </View>
-        <TouchableOpacity style={styles.deleteButton}>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => deleteWaiter(data._id)}>
           <MaterialIcons name="delete" size={24} color="red" />
         </TouchableOpacity>
       </View>

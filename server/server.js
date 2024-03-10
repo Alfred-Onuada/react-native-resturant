@@ -372,6 +372,39 @@ const PORT = process.env.PORT || 6777;
       }
     });
 
+    app.get("/waiters", async (req, res) => {
+      try {
+        const cursor = db.collection("waiters").find();
+        const waiters = await cursor.toArray();
+
+        res.status(200).json(waiters);
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
+
+    app.delete("/waiters/:waiterId", async (req, res) => {
+      try {
+        await db
+          .collection("waiters")
+          .deleteOne({ _id: new ObjectId(req.params.waiterId) });
+
+        res.end();
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
+
+    app.post("/waiters", async (req, res) => {
+      try {
+        await db.collection("waiters").insertOne(req.body);
+
+        res.status(201).json();
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
+
     app.listen(PORT, () => {
       console.log("Server is live");
     });

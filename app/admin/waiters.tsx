@@ -1,22 +1,49 @@
-import { Stack } from "expo-router";
-import { StyleSheet, View, TouchableOpacity, Text, FlatList } from "react-native";
+import { Stack, useNavigation } from "expo-router";
+import { StyleSheet, View, TouchableOpacity, Text, FlatList, Modal, TextInput } from "react-native";
 import BottomNav from "../components/bottom-nav";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WaiterItem from "../components/waiter-item";
+import { addWaiterAPI, deleteWaiterAPI, getWaiters } from "../services/admin";
+import showToast from "../utils/showToast";
 
 export default function Waiters() {
-  const [waiters, setWaiters] = useState([
-    { id: 1, name: 'John Smith', email: 'john@example.com', phone: '123-456-7890' },
-    { id: 2, name: 'Emma Johnson', email: 'emma@example.com', phone: '234-567-8901' },
-    { id: 3, name: 'Michael Williams', email: 'michael@example.com', phone: '345-678-9012' },
-    { id: 4, name: 'Olivia Brown', email: 'olivia@example.com', phone: '456-789-0123' },
-    { id: 5, name: 'William Jones', email: 'william@example.com', phone: '567-890-1234' },
-    { id: 6, name: 'Sophia Miller', email: 'sophia@example.com', phone: '678-901-2345' },
-    { id: 7, name: 'James Davis', email: 'james@example.com', phone: '789-012-3456' },
-    { id: 8, name: 'Isabella Wilson', email: 'isabella@example.com', phone: '890-123-4567' },
-    { id: 9, name: 'Daniel Taylor', email: 'daniel@example.com', phone: '901-234-5678' },
-    { id: 10, name: 'Ava Garcia', email: 'ava@example.com', phone: '012-345-6789' }
-  ]);
+  const [waiters, setWaiters] = useState<IWaiter[]>([]);
+  const [addWaiterModalIsOpen, setAddWaiterModalIsOpen] = useState(false);
+  const [waiterModal, setWaiterModal] = useState<IWaiter>({ _id: '', fullname: '', email: '', phone: ''})
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    loadWaiters();
+  }, []);
+
+  async function loadWaiters() {
+    const data = await getWaiters();
+
+    setWaiters(data);
+  }
+
+  async function deleteWaiter(id: string) {
+    try {
+      await deleteWaiterAPI(id);
+      loadWaiters();
+    } catch (error) {
+      showToast({msg: 'Error deleting waiter', danger: true});
+    }
+  }
+
+  async function addWaiter() {
+    try {
+      await addWaiterAPI(waiterModal);
+
+      setAddWaiterModalIsOpen(false);
+      setWaiterModal({ _id: '', fullname: '', email: '', phone: ''});
+      loadWaiters();
+    } catch (error) {
+      showToast({msg: 'Error adding waiter', danger: true});
+    }
+  }
+
+  navigation.addListener('focus', loadWaiters);
 
   return (
     <View style={styles.container}>
@@ -31,16 +58,80 @@ export default function Waiters() {
           headerBackTitleVisible: false
         }}
       />
+      
+      <Modal
+          visible={addWaiterModalIsOpen}
+          animationType="slide">
+            <View style={{flex: 1, marginTop: 70, marginHorizontal: 40}}>
+              <Text style={{fontSize: 17, marginBottom: 10}}>Full Name</Text>
+              <TextInput
+                placeholder="Enter new waiter name"
+                value={waiterModal.fullname}
+                style={styles.input}
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setWaiterModal(prev => ({...prev, fullname: text}))
+                }} />
+
+              <Text style={{fontSize: 17, marginBottom: 10}}>Email</Text>
+              <TextInput
+                placeholder="Enter new email"
+                value={waiterModal.email}
+                style={styles.input}
+                keyboardType="email-address"
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setWaiterModal(prev => ({...prev, email: text}))
+                }} />
+
+              <Text style={{fontSize: 17, marginBottom: 10}}>Phone</Text>
+              <TextInput
+                placeholder="Enter new phone"
+                value={waiterModal.phone}
+                style={styles.input}
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setWaiterModal(prev => ({...prev, phone: text}))
+                }} />
+
+              <Text style={{fontSize: 17, marginBottom: 10}}>Password</Text>
+              <TextInput
+                placeholder="Enter new password"
+                value={waiterModal.password}
+                style={styles.input}
+                placeholderTextColor="#A9A9A9"
+                autoCapitalize="none"
+                autoCorrect={true}
+                onChangeText={(text) => {
+                  setWaiterModal(prev => ({...prev, password: text}))
+                }} />
+
+              <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around'}}>
+                <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setAddWaiterModalIsOpen(false)}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalSaveBtn} onPress={addWaiter}>
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </Modal>
 
       <FlatList
         style={{marginTop: 20}}
         data={waiters}
-        renderItem={({item}) => <WaiterItem data={item} />} 
-        keyExtractor={(item) => item.id.toString()}
+        renderItem={({item}) => <WaiterItem deleteWaiter={deleteWaiter} data={item} />} 
+        keyExtractor={(item) => item._id.toString()}
         />
 
       <View style={{paddingHorizontal: 20}}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() =>setAddWaiterModalIsOpen(true)}>
           <Text style={styles.buttonText}>Add Waiter</Text>
         </TouchableOpacity>
       </View>
@@ -69,4 +160,32 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600'
   },
+  modalCancelBtn: {
+    width: '40%',
+    height: 50,
+    backgroundColor: 'red',
+    borderRadius: 5,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalSaveBtn: {
+    width: '40%',
+    height: 50,
+    backgroundColor: 'green',
+    borderRadius: 5,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  input: {
+    width: '100%',
+    height: 60,
+    borderWidth: 1,
+    borderColor: '#A9A9A9',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    fontSize: 18
+  }
 })
