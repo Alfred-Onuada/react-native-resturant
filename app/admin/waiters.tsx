@@ -9,7 +9,7 @@ import showToast from "../utils/showToast";
 export default function Waiters() {
   const [waiters, setWaiters] = useState<IWaiter[]>([]);
   const [addWaiterModalIsOpen, setAddWaiterModalIsOpen] = useState(false);
-  const [waiterModal, setWaiterModal] = useState<IWaiter>({ _id: '', fullname: '', email: '', phone: ''})
+  const [waiterModal, setWaiterModal] = useState<IWaiter>({ _id: '', fullname: '', email: '', phone: '', password: ''})
   const navigation = useNavigation();
 
   useEffect(() => {
