@@ -226,10 +226,32 @@ const PORT = process.env.PORT || 6777;
       try {
         const {waiter, fulfiled, ref} = req.query;
 
-        const a = await db.collection('purchases').updateOne({_id: new ObjectId(ref)},  { $set: { waiter: new ObjectId(waiter), fulfiled: fulfiled == 'true' } });
+        await db.collection('purchases').updateOne({_id: new ObjectId(ref)},  { $set: { waiter: new ObjectId(waiter), fulfiled: fulfiled == 'true' } });
 
         res.status(200).send();
       } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
+
+    app.delete('/foods/:foodId', async (req, res) => {
+      try {
+        await db.collection('foods').deleteOne({_id: new ObjectId(req.params.foodId)});
+
+        res.end();
+      } catch (error) {
+        res.status(500).json({message: error.message});
+      }
+    });
+
+    app.patch('/foods/:foodId', async (req, res) => {
+      try {
+        console.log(req.params.foodId, req.body);
+        await db.collection('foods').updateOne({_id: new ObjectId(req.params.foodId)}, {$set: req.body});
+
+        res.end();
+      } catch (error) {
+        console.log(error);
         res.status(500).json({message: error.message});
       }
     });

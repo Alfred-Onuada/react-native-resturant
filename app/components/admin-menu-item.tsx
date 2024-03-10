@@ -3,11 +3,11 @@ import { IFood } from '../interfaces/food';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function AdminMenuItem({data}: {data: IFood}) {
+export default function AdminMenuItem({data, editItem, deleteItem}: {data: IFood, editItem: (id: string) => void, deleteItem: (id: string) => void}) {
   return (
     <View style={styles.itemContainer}>
       <View style={styles.row}>
-        <Image source={require('./../../assets/pizza.jpeg')} style={styles.image}></Image>
+        <Image source={{ uri: data.image }} style={styles.image}></Image>
         <View>
           <Text style={styles.name}>{data.name}</Text>
           <Text style={styles.price}>₦{data.price}</Text>
@@ -15,10 +15,10 @@ export default function AdminMenuItem({data}: {data: IFood}) {
       </View>
 
       <View style={styles.row}>
-        <Pressable style={{marginRight: 15}}>
+        <Pressable style={{marginRight: 25}} onPress={() => editItem(data._id)}>
           <FontAwesome name="edit" size={24} color="black" />
         </Pressable>
-        <Pressable>
+        <Pressable onPress={() => deleteItem(data._id)}>
           <MaterialIcons name="delete" size={24} color="red" />
         </Pressable>
       </View>
