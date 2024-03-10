@@ -1,9 +1,10 @@
-import { Stack, useNavigation } from "expo-router";
+import { Stack, router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, View, Text } from "react-native";
 import History from "../components/history";
 import BottomNav from "../components/bottom-nav";
 import { getPurchases } from "../services/admin";
+import { logoutAPI } from "../services/users";
 
 export default function PurchaseHistory() {
   const [purchases, setPurchases] = useState<IPurchase[]>([]);
@@ -13,6 +14,12 @@ export default function PurchaseHistory() {
     const data = await getPurchases();
     
     setPurchases(data);
+  }
+
+  async function logout() {
+    await logoutAPI();
+
+    router.navigate('/');
   }
 
   useEffect(() => {
@@ -31,7 +38,14 @@ export default function PurchaseHistory() {
             fontWeight: '400',
             fontSize: 18
           },
-          headerBackTitleVisible: false
+          headerBackTitleVisible: false,
+          headerRight: (props) => {
+            return (
+              <Pressable onPress={() => logout()}>
+                <Text style={{color: '#ffffff'}}>Log Out</Text>
+              </Pressable>
+            );
+          }
         }}
       />
 

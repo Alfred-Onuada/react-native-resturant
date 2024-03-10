@@ -1,10 +1,12 @@
 import { Stack, useNavigation } from "expo-router";
-import { StyleSheet, View, TouchableOpacity, Text, FlatList, Modal, TextInput } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, Pressable, FlatList, Modal, TextInput } from "react-native";
 import BottomNav from "../components/bottom-nav";
 import { useEffect, useState } from "react";
 import WaiterItem from "../components/waiter-item";
 import { addWaiterAPI, deleteWaiterAPI, getWaiters } from "../services/admin";
 import showToast from "../utils/showToast";
+import { logoutAPI } from "../services/users";
+import { router } from "expo-router";
 
 export default function Waiters() {
   const [waiters, setWaiters] = useState<IWaiter[]>([]);
@@ -42,6 +44,13 @@ export default function Waiters() {
       showToast({msg: 'Error adding waiter', danger: true});
     }
   }
+  
+  async function logout() {
+    await logoutAPI();
+
+    router.navigate('/');
+  }
+
 
   navigation.addListener('focus', loadWaiters);
 
@@ -55,7 +64,14 @@ export default function Waiters() {
             fontWeight: '400',
             fontSize: 18
           },
-          headerBackTitleVisible: false
+          headerBackTitleVisible: false,
+          headerRight: (props) => {
+            return (
+              <Pressable onPress={() => logout()}>
+                <Text style={{color: '#ffffff'}}>Log Out</Text>
+              </Pressable>
+            );
+          }
         }}
       />
       

@@ -11,6 +11,7 @@ export default function Register() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 
   async function register() {
     try {
@@ -65,10 +66,13 @@ export default function Register() {
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#A9A9A9"
-          secureTextEntry
+          secureTextEntry={!passwordIsVisible}
           value={password}
           onChangeText={setPassword}
         />
+        <TouchableOpacity style={styles.showPassword} onPress={() => setPasswordIsVisible(!passwordIsVisible)}>
+          <Text style={{...styles.buttonText, color: 'black'}}>{passwordIsVisible ? 'Hide' : 'Show'} password</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={register} disabled={loading}>
           <Text style={styles.buttonText}>{ loading === false ? 'Register' : 'Registering...'}</Text>
         </TouchableOpacity>
@@ -130,5 +134,13 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 18,
     color: '#8d8066'
-  }
+  },
+  showPassword: {
+    width: '100%',
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
 });

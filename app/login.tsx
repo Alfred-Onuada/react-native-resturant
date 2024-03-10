@@ -1,6 +1,6 @@
 import { Link, router, Stack } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Button } from 'react-native';
 import showToast from './utils/showToast';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import { loginAPI } from './services/auth';
@@ -10,6 +10,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordIsVisible, setPasswordIsVisible] = useState(false);
 
   async function login() {
     try {
@@ -55,9 +56,12 @@ export default function Login() {
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#A9A9A9"
-          secureTextEntry
+          secureTextEntry={!passwordIsVisible}
           onChangeText={setPassword}
         />
+        <TouchableOpacity style={styles.showPassword} onPress={() => setPasswordIsVisible(!passwordIsVisible)}>
+          <Text style={{...styles.buttonText, color: 'black'}}>{passwordIsVisible ? 'Hide' : 'Show'} password</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => login()}>
           <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Login'}</Text>
         </TouchableOpacity>
@@ -94,6 +98,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
     fontSize: 18
+  },
+  showPassword: {
+    width: '100%',
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   button: {
     width: '100%',
