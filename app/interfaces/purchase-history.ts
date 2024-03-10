@@ -1,5 +1,5 @@
 interface IPurchase {
-  id: number;
+  _id: number;
   customerName: string;
   amount: number;
   type: string;

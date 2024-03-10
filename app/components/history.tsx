@@ -9,7 +9,7 @@ export default function History({data}: {data: IPurchase}) {
       </View>
       <Text style={styles.text}>Spent on: {data.type}</Text>
       <Text style={styles.text}>Approved By: {data.approvedBy}</Text>
-      <Text style={styles.text}>Date: {data.date.toLocaleDateString()}</Text>
+      <Text style={styles.text}>Date: {new Date(data.date).toLocaleDateString()}</Text>
     </View>
   )
 };

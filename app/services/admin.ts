@@ -40,3 +40,10 @@ export async function addItemAPI(food: IFood) {
 
   return;
 }
+
+export async function getPurchases() {
+  const response = await fetch(base_url + '/purchase-history');
+  const data = await response.json();
+
+  return data;
+}
