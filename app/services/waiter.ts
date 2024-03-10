@@ -25,10 +25,6 @@ export async function approveFood(ref: string) {
   const resp = await fetch(base_url + '/incoming/food?fulfiled=true&waiter=' + userInfo._id + '&ref=' + ref, {
     method: 'PATCH'
   });
-
-  const data = await resp.json();
-
-  return data;
 }
 
 export async function rejectFood(ref: string) {
@@ -43,10 +39,30 @@ export async function rejectFood(ref: string) {
   return data;
 }
 
-export async function approveTable() {
+export async function approveTable(id: string) {
+  const userInfo = await storage.load({
+    key: 'userInfo'
+  });
 
+  await fetch(base_url + '/purchases/' + id + '/approve/' + userInfo._id, {
+    method: 'PATCH'
+  });
+
+  return;
 }
 
-export async function rejectTable() {
-  
+export async function rejectTable(name: string, purchaseId: string, table: IReservation) {
+  const userInfo = await storage.load({
+    key: 'userInfo'
+  });
+
+  await fetch(base_url + '/tables/' + name + '/purchases/' + purchaseId + '/reject/' + userInfo._id, {
+    method: 'PATCH',
+    body: JSON.stringify(table),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return;
 }

@@ -163,7 +163,7 @@ const PORT = process.env.PORT || 6777;
           items: data.items,
           buyerId: new ObjectId(data.userInfo._id),
           total: data.total,
-          amount: data.amount * 100,
+          amount: data.amount,
           fees: data.fees,
           status: "pending",
           fulfiled: null,
@@ -175,7 +175,7 @@ const PORT = process.env.PORT || 6777;
         const params = {
           reference: insertInfo.insertedId,
           email: data.userInfo.email,
-          amount: data.amount,
+          amount: data.amount * 100,
           callback_url: "https://google.com",
           metadata: { cancel_action: "https://bing.com" },
         };
@@ -218,7 +218,7 @@ const PORT = process.env.PORT || 6777;
 
     app.patch("/table", async (req, res) => {
       try {
-        const {_id} = req.body;
+        const {_id} = req.body.table;
 
         const table = await db.collection("tables").findOne({ _id: new ObjectId(_id) });
 
@@ -237,14 +237,14 @@ const PORT = process.env.PORT || 6777;
         const reservedDates = table.reservedDates;
 
         // check that none of the current reserved dates is equal to the date of the req.body.time
-        const isReserved = reservedDates.some((date) => date.split("T")[0] === req.body.time.split("T")[0]);
+        const isReserved = reservedDates.some((date) => date.split("T")[0] === req.body.table.time.split("T")[0]);
 
         if (isReserved) {
           res.status(400).json({message: "This table is already booked for this time"});
           return;
         }
 
-        reservedDates.push(req.body.time);
+        reservedDates.push(req.body.table.time);
 
         await db
           .collection("tables")
@@ -252,6 +252,11 @@ const PORT = process.env.PORT || 6777;
             { _id: new ObjectId(_id) },
             { $set: { reservedDates } }
           );
+
+        await db.collection("purchases").updateOne(
+          { _id: new ObjectId(req.body.purchaseId) },
+          { $set: { status: "success" }}
+        );
 
         res.status(200).send();
       } catch (error) {
@@ -299,7 +304,52 @@ const PORT = process.env.PORT || 6777;
         // table is any purchase that has 0 fees
         const cursor = db
           .collection("purchases")
-          .find({ fees: 0, status: "pending" });
+          .aggregate([
+            {
+              $match: {
+                fees: 0,
+                fulfiled: null
+              },
+            },
+            {
+              $addFields: {
+                items: {
+                  $arrayElemAt: ["$items", 0],
+                },
+              },
+            },
+            {
+              $addFields: {
+                amountPaid: "$amount",
+                tableName: "$items.number",
+                time: "$items.time",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "buyerId",
+                foreignField: "_id",
+                as: "customerInfo",
+              },
+            },
+            {
+              $addFields: {
+                customerInfo: {
+                  $arrayElemAt: ["$customerInfo", 0],
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                amountPaid: 1,
+                tableName: 1,
+                customerInfo: "$customerInfo.fullname",
+                time: 1,
+              },
+            },
+          ]);
         const tables = await cursor.toArray();
 
         res.status(200).json(tables);
@@ -326,6 +376,7 @@ const PORT = process.env.PORT || 6777;
 
         res.status(200).send();
       } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
       }
     });
@@ -462,6 +513,74 @@ const PORT = process.env.PORT || 6777;
         await db.collection("waiters").insertOne(req.body);
 
         res.status(201).json();
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
+
+    app.patch('/purchases/:purchaseId/approve/:waiterId', async (req, res) => {
+      try {
+        const {purchaseId, waiterId} = req.params;
+
+        await db
+          .collection("purchases")
+          .updateOne(
+            { _id: new ObjectId(purchaseId) },
+            {
+              $set: {
+                waiter: new ObjectId(waiterId),
+                fulfiled: true,
+              },
+            }
+          );
+
+        res.status(200).send();
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+    });
+
+    app.patch('/tables/:tableNumber/purchases/:purchaseId/reject/:waiterId', async (req, res) => {
+      try {
+        const {tableNumber, waiterId, purchaseId} = req.params;
+        const {time} = req.body;
+
+        // update the table to remove the reserved date
+        const table = await db.collection("tables").findOne({ number: tableNumber });
+
+        if (!table) {
+          res
+            .status(400)
+            .json({ message: "This table was not found" });
+          return;
+        }
+
+        const reservedDates = table.reservedDates;
+
+        const newReservedDates = reservedDates.filter(
+          (date) => date !== time
+        );
+
+        await db
+          .collection("tables")
+          .updateOne(
+            { tableNumber },
+            { $set: { reservedDates: newReservedDates } }
+          );
+
+        await db
+          .collection("purchases")
+          .updateOne(
+            { _id: new ObjectId(purchaseId) },
+            {
+              $set: {
+                waiter: new ObjectId(waiterId),
+                fulfiled: true,
+              },
+            }
+          );
+
+        res.status(200).send();
       } catch (error) {
         res.status(500).json({ message: error.message });
       }

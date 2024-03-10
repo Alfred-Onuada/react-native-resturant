@@ -112,10 +112,10 @@ export async function handleTransferSuccess(ref: string) {
   });
 };
 
-export async function reserveTableAPI(table: ITable) {  
+export async function reserveTableAPI(table: ITable, purchaseId: string) {  
   const resp = await fetch(base_url + '/table', {
     method: 'PATCH',
-    body: JSON.stringify(table),
+    body: JSON.stringify({table, purchaseId}),
     headers: {
       'Content-Type': 'application/json',
     },

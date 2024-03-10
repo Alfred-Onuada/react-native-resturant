@@ -3,4 +3,5 @@ interface IReservation {
   tableName: string;
   customerInfo: string;
   amountPaid: number;
+  time: string,
 }

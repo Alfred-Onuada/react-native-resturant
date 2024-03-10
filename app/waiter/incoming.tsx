@@ -4,8 +4,10 @@ import { StyleSheet, View, Text, Pressable, FlatList } from 'react-native';
 import OrderItem from '../components/incoming-order';
 import ReservationItem from '../components/incoming-reservation';
 import { logoutAPI } from '../services/users';
-import { getIncomingFood, getIncomingTables } from '../services/waiter';
+import { approveTable, getIncomingFood, getIncomingTables, rejectTable } from '../services/waiter';
 import { approveFood, rejectFood } from '../services/waiter';
+import showToast from '../utils/showToast';
+import { RootSiblingParent } from 'react-native-root-siblings';
 
 export default function Incoming() {
   const [activeTab, setActiveTab] = useState("orders");
@@ -34,13 +36,32 @@ export default function Incoming() {
   const handleApprove = async (orderId: string) => {
     await approveFood(orderId);
 
-    setOrders(prev => prev.filter(o => o._id?.toString() !== orderId.toString()));
+    loadOrders();
   };
   
   const handleReject = async (orderId: string) => {
     await rejectFood(orderId);
 
-    setOrders(prev => prev.filter(o => o._id?.toString() !== orderId.toString()));
+    loadOrders();
+  };
+
+  const handleApproveTable = async (tableId: string) => {
+    await approveTable(tableId);
+
+    loadReservations();
+  };
+  
+  const handleRejectTable = async (tableName: string, purchaseId: string) => {
+    const table = reservations.find(r => r.tableName === tableName);
+
+    if (!table) {
+      showToast({msg: 'Table not found', danger: true});
+      return;
+    }
+
+    await rejectTable(tableName, purchaseId, table);
+
+    loadReservations();
   };
 
   useEffect(() => {
@@ -54,55 +75,57 @@ export default function Incoming() {
   });
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: 'Incoming',
-          headerStyle: { backgroundColor: '#8d8066' },
-          headerTitleStyle: {
-            fontWeight: '400',
-            fontSize: 18
-          },
-          headerBackTitleVisible: false,
-          headerBackVisible: false,
-          headerRight: (props) => {
-            return (
-              <Pressable onPress={() => logout()}>
-                <Text style={{color: '#ffffff'}}>Log Out</Text>
-              </Pressable>
-            );
-          }
-        }}
-      />
+    <RootSiblingParent>
+      <View style={styles.container}>
+        <Stack.Screen
+          options={{
+            title: 'Incoming',
+            headerStyle: { backgroundColor: '#8d8066' },
+            headerTitleStyle: {
+              fontWeight: '400',
+              fontSize: 18
+            },
+            headerBackTitleVisible: false,
+            headerBackVisible: false,
+            headerRight: (props) => {
+              return (
+                <Pressable onPress={() => logout()}>
+                  <Text style={{color: '#ffffff'}}>Log Out</Text>
+                </Pressable>
+              );
+            }
+          }}
+        />
 
-      <View style={styles.tabs}>
-        <Pressable style={styles.tabsEach} onPress={() => setActiveTab('orders')}>
-          <Text style={styles.tabText}>Orders</Text>
-        </Pressable>
-        <Pressable style={styles.tabsEach} onPress={() => setActiveTab('reservation')}>
-          <Text style={styles.tabText}>Reservation</Text>
-        </Pressable>
+        <View style={styles.tabs}>
+          <Pressable style={styles.tabsEach} onPress={() => setActiveTab('orders')}>
+            <Text style={styles.tabText}>Orders</Text>
+          </Pressable>
+          <Pressable style={styles.tabsEach} onPress={() => setActiveTab('reservation')}>
+            <Text style={styles.tabText}>Reservation</Text>
+          </Pressable>
+        </View>
+        <View style={{...styles.activeIndicator, ...(activeTab === 'reservation' ? styles.activeRight : {})}}></View>
+
+        {/* Orders */}
+        {
+          activeTab === 'orders' &&
+          <FlatList
+            data={orders}
+            renderItem={({item}) => <OrderItem item={item} handleApprove={handleApprove} handleReject={handleReject} />}
+            keyExtractor={(item) => item._id.toString()}/>
+        }
+
+        {/* Seats */}
+        {
+          activeTab === 'reservation' &&
+          <FlatList
+            data={reservations}
+            renderItem={({item}) => <ReservationItem item={item} handleApproveTable={handleApproveTable} handleRejectTable={handleRejectTable} />}
+            keyExtractor={(item) => item._id.toString()}/>
+        }
       </View>
-      <View style={{...styles.activeIndicator, ...(activeTab === 'reservation' ? styles.activeRight : {})}}></View>
-
-      {/* Orders */}
-      {
-        activeTab === 'orders' &&
-        <FlatList
-          data={orders}
-          renderItem={({item}) => <OrderItem item={item} handleApprove={handleApprove} handleReject={handleReject} />}
-          keyExtractor={(item) => item._id.toString()}/>
-      }
-
-      {/* Seats */}
-      {
-        activeTab === 'reservation' &&
-        <FlatList
-          data={reservations}
-          renderItem={ReservationItem}
-          keyExtractor={(item) => item._id.toString()}/>
-      }
-    </View>
+    </RootSiblingParent>
   );
 }
 

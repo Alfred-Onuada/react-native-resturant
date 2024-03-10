@@ -35,7 +35,7 @@ export default function SeatReservation() {
       if (ref && tableToReserve && event.url.startsWith("https://google.com")) {
         bottomSheetRef.current?.close();
   
-        await reserveTableAPI(tableToReserve);
+        await reserveTableAPI(tableToReserve, ref);
   
         showToast({msg: 'Table reserved successfully'});
       }
